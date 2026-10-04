@@ -1,0 +1,23 @@
+name: Sync Game from Google Drive
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Indir
+        uses: actions/checkout@v4
+
+      - name: Google Drive'dan En Son Oyunu Cek
+        run: |
+          curl -L "https://drive.google.com/uc?export=download&id=1TDaUIrVyGVsgRjEXkG_G-bT2gs9iQER-" -o index.html
+
+      - name: Kaydet ve Zorla Yayinla
+        run: |
