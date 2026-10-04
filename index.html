@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Evolve Mobile - Hücre Çağı</title>
+  <title>Evolve Mobile</title>
   <style>
     :root {
       --bg: #090d16;
@@ -14,6 +14,7 @@
       --accent-rna: #10b981;
       --accent-dna: #38bdf8;
       --accent-atp: #f59e0b;
+      --accent-bio: #ec4899;
       --accent-text: #f8fafc;
       --muted: #64748b;
       --danger: #ef4444;
@@ -45,40 +46,17 @@
       box-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
 
-    /* Drive Preview Warning Banner */
     #js-disabled-banner {
       background: #b91c1c;
       color: white;
-      padding: 14px 16px;
-      font-size: 13px;
+      padding: 12px 14px;
+      font-size: 12px;
       font-weight: 700;
       text-align: center;
       line-height: 1.4;
-      border-bottom: 2px solid #ef4444;
       display: block;
     }
 
-    #js-status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      color: var(--accent-rna);
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-weight: 600;
-    }
-    .pulse-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--accent-rna);
-      box-shadow: 0 0 8px var(--accent-rna);
-    }
-
-    /* Top Sticky Header */
     header {
       background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(10px);
@@ -86,7 +64,7 @@
       padding: 10px 14px;
       z-index: 100;
     }
-    .game-header-top {
+    .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -97,8 +75,17 @@
       font-weight: 800;
       letter-spacing: 0.5px;
       color: #94a3b8;
-      text-transform: uppercase;
     }
+    .era-badge {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-rna);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
     .resources-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -120,7 +107,7 @@
       justify-content: space-between;
     }
     .res-val {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       margin-top: 2px;
       white-space: nowrap;
@@ -135,8 +122,8 @@
     .res-rna .res-val { color: var(--accent-rna); }
     .res-dna .res-val { color: var(--accent-dna); }
     .res-atp .res-val { color: var(--accent-atp); }
+    .res-bio .res-val { color: var(--accent-bio); }
 
-    /* Main Scroll Area */
     main {
       flex: 1;
       overflow-y: auto;
@@ -147,29 +134,30 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    /* Big Clicker Button */
     .synth-btn {
       width: 100%;
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: white;
       border: none;
       border-radius: 14px;
-      padding: 16px;
-      font-size: 16px;
+      padding: 15px;
+      font-size: 15px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
       box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
       transition: transform 0.05s ease, filter 0.05s ease;
-      position: relative;
-      user-select: none;
     }
     .synth-btn:active {
       transform: scale(0.96);
-      filter: brightness(0.88);
+      filter: brightness(0.9);
+    }
+    .synth-btn.bio-mode {
+      background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
+      box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35);
     }
     .synth-btn .sub {
       font-size: 11px;
@@ -178,7 +166,6 @@
       display: block;
     }
 
-    /* Multiplier Bar */
     .multiplier-bar {
       display: flex;
       justify-content: space-between;
@@ -205,7 +192,6 @@
       border-color: #0284c7;
     }
 
-    /* Item Card */
     .section-title {
       font-size: 12px;
       font-weight: 800;
@@ -214,6 +200,7 @@
       letter-spacing: 0.5px;
       margin-top: 4px;
     }
+
     .item-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -264,7 +251,7 @@
       border-top: 1px solid rgba(255,255,255,0.05);
     }
     .item-cost {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       color: #e2e8f0;
     }
@@ -280,25 +267,55 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      min-width: 75px;
+      min-width: 80px;
       text-align: center;
       transition: transform 0.05s ease, background 0.1s ease;
     }
     .action-btn:active {
       transform: scale(0.95);
     }
-    .action-btn.disabled, .action-btn:disabled {
+    .action-btn.disabled {
       background: #1e293b !important;
       color: #64748b !important;
       cursor: not-allowed;
-      transform: none;
       border: 1px solid #334155;
     }
     .action-btn.green {
       background: #059669;
     }
 
-    /* Tabs */
+    /* Species Choice Cards */
+    .species-card {
+      background: #1e293b;
+      border: 2px solid #334155;
+      border-radius: 14px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.08s;
+    }
+    .species-card:active {
+      transform: scale(0.98);
+    }
+    .species-card.selected {
+      border-color: var(--accent-rna);
+      background: rgba(16, 185, 129, 0.08);
+    }
+    .species-title {
+      font-size: 15px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .species-trait {
+      font-size: 11px;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
     .tab-pane {
       display: none;
       flex-direction: column;
@@ -308,7 +325,6 @@
       display: flex;
     }
 
-    /* Bottom Nav Bar */
     nav.bottom-nav {
       position: absolute;
       bottom: 0;
@@ -338,15 +354,10 @@
     .nav-tab.active {
       color: var(--accent-rna);
     }
-    .nav-tab.active .nav-icon {
-      transform: scale(1.15);
-    }
     .nav-icon {
       font-size: 18px;
-      transition: transform 0.1s;
     }
 
-    /* Logs */
     .log-container {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -370,7 +381,6 @@
       border-left-color: var(--accent-dna);
     }
 
-    /* Floating Click Indicator */
     .click-feedback {
       position: fixed;
       font-weight: 800;
@@ -385,7 +395,6 @@
       100% { opacity: 0; transform: translate(-50%, -40px) scale(1.2); }
     }
 
-    /* Toast */
     #toast-msg {
       position: fixed;
       top: 80px;
@@ -408,22 +417,16 @@
 <body>
 
 <div id="app-container">
-  <!-- Warning Banner: Visible only if JS is blocked (like in Google Drive preview) -->
   <div id="js-disabled-banner">
-    ⚠️ <b>DİKKAT:</b> Google Drive önizleme ekranındasınız. Google Drive güvenlik gereği buton kodlarını çalıştırmaz.<br>
-    <b>Nasıl Oynanır:</b> Sağ üstteki <b>İndir</b> butonuna basın, inen <code>.html</code> dosyasını doğrudan Chrome veya Safari tarayıcınızda açın!
+    ⚠️ <b>DİKKAT:</b> Google Drive önizleme ekranındasınız. Lütfen sayfayı <b>https://trialbyright.github.io/evolve-mobile/</b> adresinden açın!
   </div>
 
-  <!-- Header -->
   <header>
-    <div class="game-header-top">
-      <span class="game-title">EVOLVE: HÜCRE ÇAĞI</span>
-      <span id="js-status-badge">
-        <span class="pulse-dot"></span>
-        <span>Motor: Başlatılıyor...</span>
-      </span>
+    <div class="header-top">
+      <span class="game-title">EVOLVE: EVRİM ÇAĞI</span>
+      <span class="era-badge" id="era-badge">🌱 Pre-Biyotik Çorba</span>
     </div>
-    <div class="resources-grid">
+    <div class="resources-grid" id="res-grid">
       <div class="res-pill res-rna">
         <div class="res-label"><span>RNA</span><span id="label-rna-cap">/ 250</span></div>
         <div class="res-val" id="val-rna">50</div>
@@ -436,26 +439,38 @@
       </div>
       <div class="res-pill res-atp">
         <div class="res-label"><span>ATP Enerji</span><span id="label-atp-cap">/ 100</span></div>
-        <div class="res-val" id="val-atp">0</div>
+        <div class="res-val" id="val-atp">10</div>
         <div class="res-rate" id="rate-atp">+0.0/sn</div>
       </div>
     </div>
   </header>
 
-  <!-- Main View -->
   <main id="main-area">
-    <!-- Tab 1: Hücre & Organeller -->
-    <div id="tab-organelles" class="tab-pane active">
-      <button class="synth-btn" id="main-synth-btn" onclick="handleSynthClick(event)">
-        <span style="font-size:26px;">🧬</span>
+    <!-- Tab 1: Hücre veya Beden -->
+    <div id="tab-primary" class="tab-pane active">
+      <button class="synth-btn" id="main-synth-btn" onclick="handlePrimaryClick(event)">
+        <span style="font-size:26px;" id="synth-icon">🧬</span>
         <span>
-          <span>Primordiyal Çorbayı Sentezle</span>
+          <span id="synth-title">Primordiyal Çorbayı Sentezle</span>
           <span class="sub" id="synth-info">+1 RNA üretmek için dokun</span>
         </span>
       </button>
 
+      <!-- Metabolic Surge (ATP Harcayarak Geçici 2x Hızlandırma) -->
+      <div class="item-card" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
+        <div class="item-header">
+          <span class="item-title" style="color:var(--accent-atp);">⚡ Metabolik Aşırı Hız (ATP Kullanımı)</span>
+          <span class="item-count" id="surge-timer" style="color:var(--accent-atp); background:rgba(245, 158, 11, 0.15); border-color:var(--accent-atp);">Pasif</span>
+        </div>
+        <p class="item-desc">Hücrede biriken ATP'yi yakarak 15 saniye boyunca <b>tüm üretimi ve dokunma gücünü 2 katına çıkarır</b>.</p>
+        <div class="item-footer">
+          <span class="item-cost" id="surge-cost">25 ATP</span>
+          <button class="action-btn" id="btn-surge" style="background:#d97706;" onclick="activateSurge()">Aşırı Hızla</button>
+        </div>
+      </div>
+
       <div class="multiplier-bar">
-        <span class="section-title">Organeller</span>
+        <span class="section-title" id="structures-title">Organeller & Yapılar</span>
         <div class="mult-group">
           <button class="mult-btn active" id="btn-mult-1" onclick="setMultiplier(1)">1x</button>
           <button class="mult-btn" id="btn-mult-10" onclick="setMultiplier(10)">10x</button>
@@ -463,16 +478,25 @@
         </div>
       </div>
 
-      <div id="organelle-cards-container" style="display:flex; flex-direction:column; gap:10px;">
-        <!-- Dynamically rendered -->
+      <div id="structures-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Injected -->
       </div>
     </div>
 
-    <!-- Tab 2: Evrim & Araştırma -->
+    <!-- Tab 2: Evrim & Tür Seçimi -->
     <div id="tab-research" class="tab-pane">
-      <div class="section-title">Genetik Adaptasyon & Evrim</div>
-      <div id="research-cards-container" style="display:flex; flex-direction:column; gap:10px;">
-        <!-- Dynamically rendered -->
+      <div class="section-title" id="research-title">Genetik Adaptasyon & Evrim</div>
+      <div id="research-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Injected -->
+      </div>
+
+      <!-- Species Selection Block (Unlocked in Multicellular) -->
+      <div id="species-section" style="display:none; flex-direction:column; gap:10px;">
+        <div class="section-title" style="color:#ec4899;">🌍 Familya & Canlı Türü Seçimi</div>
+        <p class="item-desc" style="color:#cbd5e1;">Çok hücreli kolonin evrileceği ana biyolojik familyayı seç. Her türün medeniyet kurarken kendine has güçlü özellikleri vardır:</p>
+        <div id="species-cards-container" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- 6 Species: Plants, Fungi, Mammals, Reptiles, Insects, Avians -->
+        </div>
       </div>
     </div>
 
@@ -480,7 +504,7 @@
     <div id="tab-logs" class="tab-pane">
       <div class="section-title">Evrim Tarihçesi</div>
       <div class="log-container" id="log-list">
-        <div class="log-item special">0. Gün: Sıcak volkanik çorba içinde ilk moleküler bağlar oluştu.</div>
+        <div class="log-item special">0. Milyar Yıl: Sıcak volkanik okyanuslarda ilk organik bileşikler sentezlendi.</div>
       </div>
     </div>
 
@@ -489,7 +513,7 @@
       <div class="section-title">Oyun Kontrolleri</div>
       <div class="item-card">
         <div class="item-title">💾 İlerleme Kaydetme</div>
-        <p class="item-desc">Oyun otomatik olarak her 5 saniyede bir tarayıcınıza kaydedilir.</p>
+        <p class="item-desc">Oyun otomatik olarak her 5 saniyede bir telefonunuzun hafızasına kaydedilir.</p>
         <div style="display:flex; gap:8px; margin-top:8px;">
           <button class="action-btn green" onclick="forceSave()">Şimdi Kaydet</button>
           <button class="action-btn" style="background:#dc2626;" onclick="resetSave()">Sıfırla</button>
@@ -497,25 +521,22 @@
       </div>
 
       <div class="item-card">
-        <div class="item-title">📱 Mobil Kurulum İpucu</div>
-        <p class="item-desc">Bu oyunu Safari veya Chrome menüsünden <b>"Ana Ekrana Ekle" (Add to Home Screen)</b> derseniz, tam ekran bir mobil uygulama gibi çalışır.</p>
-      </div>
-
-      <div class="item-card">
-        <div class="item-title">🧪 Test Modu (+1000 RNA)</div>
-        <p class="item-desc">Bütün mekanikleri ve butonları anında hızlıca test etmek için:</p>
-        <div style="margin-top:8px;">
-          <button class="action-btn" style="background:#475569;" onclick="cheatRna()">+1000 RNA Ekle</button>
+        <div class="item-title">🧪 Hızlı Test Menüsü</div>
+        <p class="item-desc">Mekanikleri test etmek için anında kaynak ekleme:</p>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
+          <button class="action-btn" style="background:#475569;" onclick="cheatAdd('rna', 1000)">+1000 RNA</button>
+          <button class="action-btn" style="background:#0284c7;" onclick="cheatAdd('dna', 100)">+100 DNA</button>
+          <button class="action-btn" style="background:#d97706;" onclick="cheatAdd('atp', 100)">+100 ATP</button>
+          <button class="action-btn" style="background:#db2777;" onclick="cheatAdd('bio', 500)">+500 Biyokütle</button>
         </div>
       </div>
     </div>
   </main>
 
-  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <button class="nav-tab active" id="nav-btn-organelles" onclick="switchTab('tab-organelles')">
-      <span class="nav-icon">🧬</span>
-      <span>Hücre</span>
+    <button class="nav-tab active" id="nav-btn-primary" onclick="switchTab('tab-primary')">
+      <span class="nav-icon" id="nav-icon-primary">🧬</span>
+      <span id="nav-label-primary">Hücre</span>
     </button>
     <button class="nav-tab" id="nav-btn-research" onclick="switchTab('tab-research')">
       <span class="nav-icon">🔬</span>
@@ -531,71 +552,84 @@
     </button>
   </nav>
 
-  <!-- Toast -->
   <div id="toast-msg">Bildirim</div>
 </div>
 
 <script>
-// --- ROBUST IN-MEMORY & LOCAL STORAGE ENGINE ---
+// --- SAFE STORAGE WRAPPER ---
 const safeStore = {
-  get: function(key) {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        return window.localStorage.getItem(key);
-      }
-    } catch (e) {
-      console.warn("Storage read restricted", e);
-    }
+  get: function(k) {
+    try { if (typeof window !== 'undefined' && window.localStorage) return window.localStorage.getItem(k); } catch(e){}
     return null;
   },
-  set: function(key, val) {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.setItem(key, val);
-      }
-    } catch (e) {
-      console.warn("Storage write restricted", e);
-    }
+  set: function(k, v) {
+    try { if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(k, v); } catch(e){}
   },
-  remove: function(key) {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        window.localStorage.removeItem(key);
-      }
-    } catch (e) {}
+  remove: function(k) {
+    try { if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(k); } catch(e){}
   }
 };
 
 // --- GAME STATE ---
 const game = {
+  era: "cellular", // "cellular" or "multicellular"
+  selectedSpecies: null,
+  surgeSecondsLeft: 0,
   res: {
-    rna: 50, // 50 Starter RNA so first buttons are immediately testable!
+    rna: 50,
     rnaCap: 250,
     dna: 0,
     dnaCap: 50,
-    atp: 0,
-    atpCap: 100
+    atp: 25,
+    atpCap: 100,
+    biomass: 0,
+    biomassCap: 500,
+    sentience: 0,
+    sentienceCap: 200
   },
   clickPower: 1,
   buyMult: 1,
   lastTick: Date.now(),
+  
+  // Organelles for Cellular Era
   organelles: {
-    membrane: { id: "membrane", name: "Hücre Zarı", count: 0, baseCost: 15, costMult: 1.18, costRes: "rna", desc: "Zar yüzeyini genişleterek RNA ve besin depolama sınırını artırır.", effect: "+150 RNA & +50 ATP Deposu" },
-    ribosome: { id: "ribosome", name: "Ribozom", count: 0, baseCost: 20, costMult: 1.15, costRes: "rna", desc: "Amino asitleri RNA zincirlerine çeviren protein fabrikası.", effect: "+0.5 RNA/sn" },
-    cytoplasm: { id: "cytoplasm", name: "Sitoplazma Rezervi", count: 0, baseCost: 75, costMult: 1.16, costRes: "rna", desc: "Hücre içi sıvı yoğunluğunu artırarak sentez hızını yükseltir.", effect: "+1.2 RNA/sn, +100 RNA Deposu" },
-    mitochondria: { id: "mitochondria", name: "Mitokondri", count: 0, baseCost: 150, costMult: 1.20, costRes: "rna", desc: "Hücrenin enerji santrali. Kimyasal enerjiyi ATP'ye dönüştürür.", effect: "+1.0 ATP/sn" },
-    nucleus: { id: "nucleus", name: "Hücre Çekirdeği", count: 0, baseCost: 300, costMult: 1.25, costRes: "rna", desc: "Genetik bilgiyi korur, DNA sentezler ve çekirdek kapasitesini artırır.", effect: "+0.2 DNA/sn, +25 DNA Deposu" },
-    chromosome: { id: "chromosome", name: "Kromozom Sarmalı", count: 0, baseCost: 450, costMult: 1.22, costRes: "rna", desc: "DNA zincirlerini süper sarmal haline getirip paketleyerek DNA kapasitesini devasa oranda büyütür.", effect: "+50 DNA Deposu" },
-    flagellum: { id: "flagellum", name: "Kamçı (Flagellum)", count: 0, baseCost: 650, costMult: 1.25, costRes: "rna", desc: "Hücrenin hareket etmesini sağlayarak zengin besin havuzlarına ulaşır.", effect: "+3.5 RNA/sn" }
+    membrane: { id: "membrane", name: "Hücre Zarı", count: 0, baseCost: 15, costAtp: 0, costMult: 1.18, costRes: "rna", desc: "Zar yüzeyini genişleterek RNA ve besin depolama sınırını artırır.", effect: "+150 RNA & +50 ATP Deposu" },
+    ribosome: { id: "ribosome", name: "Ribozom", count: 0, baseCost: 20, costAtp: 0, costMult: 1.15, costRes: "rna", desc: "Amino asitleri RNA zincirlerine çeviren protein fabrikası.", effect: "+0.5 RNA/sn" },
+    mitochondria: { id: "mitochondria", name: "Mitokondri", count: 0, baseCost: 80, costAtp: 0, costMult: 1.20, costRes: "rna", desc: "Hücrenin enerji santrali. Kimyasal enerjiyi ATP'ye dönüştürür.", effect: "+1.2 ATP/sn" },
+    cytoplasm: { id: "cytoplasm", name: "Sitoplazma Rezervi", count: 0, baseCost: 100, costAtp: 10, costMult: 1.16, costRes: "rna", desc: "Hücre içi sıvı yoğunluğunu artırarak sentez hızını yükseltir.", effect: "+1.2 RNA/sn, +100 RNA Deposu" },
+    nucleus: { id: "nucleus", name: "Hücre Çekirdeği", count: 0, baseCost: 250, costAtp: 25, costMult: 1.25, costRes: "rna", desc: "Genetik bilgiyi korur, DNA sentezler ve çekirdek kapasitesini artırır.", effect: "+0.2 DNA/sn, +25 DNA Deposu" },
+    chromosome: { id: "chromosome", name: "Kromozom Sarmalı", count: 0, baseCost: 400, costAtp: 30, costMult: 1.22, costRes: "rna", desc: "DNA zincirlerini paketleyerek depolama kapasitesini devasa büyütür.", effect: "+50 DNA Deposu" },
+    flagellum: { id: "flagellum", name: "Kamçı (Flagellum)", count: 0, baseCost: 550, costAtp: 40, costMult: 1.25, costRes: "rna", desc: "Hareket ederek zengin besin havuzlarına ulaşır. Çalışırken hafif ATP tüketir.", effect: "+4.0 RNA/sn (Tüketim: 0.2 ATP/sn)" }
   },
+
+  // Organs & Body Systems for Multicellular Era
+  organs: {
+    tissue: { id: "tissue", name: "Doku Hücreleri", count: 0, baseCost: 40, costRes: "biomass", costAtp: 10, costMult: 1.18, desc: "Hücrelerin organize olarak oluşturduğu temel yapı tabakası.", effect: "+1.5 Biyokütle/sn, +100 Biyokütle Deposu" },
+    digestive: { id: "digestive", name: "Sindirim Boşluğu", count: 0, baseCost: 90, costRes: "biomass", costAtp: 20, costMult: 1.20, desc: "Besinleri daha verimli ayrıştırarak devasa enerji ve biyokütle sağlar.", effect: "+3.0 Biyokütle/sn & +1.5 ATP/sn" },
+    sensory: { id: "sensory", name: "Duyu Reseptörleri", count: 0, baseCost: 150, costRes: "biomass", costAtp: 25, costMult: 1.22, desc: "Işığı ve kimyasalları algılayarak yiyecek bulmayı kolaylaştırır.", effect: "Dokunma gücü +3" },
+    muscles: { id: "muscles", name: "Kas Lifleri", count: 0, baseCost: 220, costRes: "biomass", costAtp: 35, costMult: 1.25, desc: "Aktif hareket ve avlanma gücü sağlar.", effect: "+5.0 Biyokütle/sn (Tüketim: 0.5 ATP/sn)" },
+    ganglion: { id: "ganglion", name: "Sinir Düğümü (İlkel Beyin)", count: 0, baseCost: 350, costRes: "biomass", costAtp: 50, costMult: 1.30, desc: "Bilinç ve zeka kıvılcımları üretir. Medeniyet çağına geçişin şartıdır.", effect: "+0.5 Zeka /sn, +50 Zeka Kapasitesi" }
+  },
+
+  // Research for Cellular Era
   research: {
-    permeability: { id: "permeability", name: "Zar Geçirgenliği", costDna: 0, costRna: 35, bought: false, desc: "Çorbadaki serbest molekülleri daha hızlı yakalar.", effect: "Dokunma gücü +1" },
-    glycolysis: { id: "glycolysis", name: "Glikoliz Enzimleri", costDna: 0, costRna: 100, bought: false, desc: "Şeker moleküllerini parçalayarak ilkel ATP üretimi sağlar.", effect: "Pasif +0.3 ATP/sn" },
-    histone: { id: "histone", name: "Histon Protein Paketleme", costDna: 20, costRna: 200, bought: false, desc: "DNA'yı histon makaralarına sararak çekirdeğe sığdırır.", effect: "+50 DNA Kapasitesi" },
-    eukaryote: { id: "eukaryote", name: "Ökaryotik Dönüşüm", costDna: 35, costRna: 350, bought: false, desc: "Zarla çevrili organeller ve gelişmiş çekirdek. DNA çağını başlatır.", effect: "Tüm üretimler %50 artar" },
-    phagocytosis: { id: "phagocytosis", name: "Fagositoz (Yutma)", costDna: 50, costRna: 600, bought: false, desc: "Büyük besin kütlelerini içine alarak hızlı gelişme sağlar.", effect: "Dokunma gücü +5" },
-    multicellularity: { id: "multicellularity", name: "Çok Hücrelilik (Gelecek Çağ)", costDna: 100, costRna: 1500, bought: false, desc: "Hücreler kolonileşir ve iş bölümü yapar. Bir sonraki çağa geçiş!", effect: "Kara Yaşamı Çağının Kilidi Açılır!" }
-  }
+    permeability: { id: "permeability", name: "Zar Geçirgenliği", costDna: 0, costRna: 35, costAtp: 0, bought: false, desc: "Çorbadaki serbest molekülleri daha hızlı yakalar.", effect: "Dokunma gücü +1" },
+    glycolysis: { id: "glycolysis", name: "Glikoliz Enzimleri", costDna: 0, costRna: 80, costAtp: 0, bought: false, desc: "Şeker moleküllerini parçalayarak ilkel ATP üretimi sağlar.", effect: "Pasif +0.5 ATP/sn" },
+    histone: { id: "histone", name: "Histon Protein Paketleme", costDna: 20, costRna: 180, costAtp: 15, bought: false, desc: "DNA'yı histon makaralarına sararak çekirdeğe sığdırır.", effect: "+50 DNA Kapasitesi" },
+    eukaryote: { id: "eukaryote", name: "Ökaryotik Dönüşüm", costDna: 35, costRna: 300, costAtp: 30, bought: false, desc: "Zarla çevrili organeller ve gelişmiş çekirdek. DNA çağını başlatır.", effect: "Tüm üretimler %50 artar" },
+    phagocytosis: { id: "phagocytosis", name: "Fagositoz (Yutma)", costDna: 50, costRna: 500, costAtp: 40, bought: false, desc: "Büyük besin kütlelerini içine alarak hızlı gelişme sağlar.", effect: "Dokunma gücü +5" },
+    multicellularity: { id: "multicellularity", name: "Çok Hücrelilik (Gelecek Çağ)", costDna: 90, costRna: 1000, costAtp: 75, bought: false, desc: "Hücreler birleşip kolonileşir, organlar gelişir. 2. Çağı başlatır!", effect: "2. Çağ: Çok Hücreli Evrim ve Türleşme açılır!" }
+  },
+
+  // 6 Species Options (Plant, Fungi, Mammal, Reptile, Insect, Bird)
+  speciesList: [
+    { id: "plant", name: "🌿 Bitkiler (Plantoid)", icon: "🌿", trait: "Fotosentez Ustası", desc: "Güneş ışığını doğrudan biyokütleye ve ATP'ye çevirir. Yiyecek tüketimi sıfırdır, pasif kaynak üretimi %75 daha fazladır." },
+    { id: "fungi", name: "🍄 Mantarlar (Fungoid)", icon: "🍄", trait: "Ayrıştırıcı & Spor", desc: "Organik atıkları ve çürüyen maddeleri sindirir. Biyokütle kapasitesi 2 katına çıkar, hızlı yayılır." },
+    { id: "mammal", name: "🐾 Memeliler (Mammal)", icon: "🐾", trait: "Gelişmiş Zeka & Uyum", desc: "Yüksek beyin hacmi ve sıcakkanlılık. Bilinç ve zeka üretimi 2 kat daha hızlıdır, teknolojiler ucuzlar." },
+    { id: "reptile", name: "🦎 Sürüngenler (Reptile)", icon: "🦎", trait: "Kabuk & Metabolik Tasarruf", desc: "Pullu zırh ve soğukkanlılık. ATP ve enerji tüketimi %50 düşüktür, zorlu koşullara en dayanıklı türdür." },
+    { id: "insect", name: "🐜 Böcekler (Insectoid)", icon: "🐜", trait: "Koloni Sürüsü & Kitin", desc: "Kitin dış iskelet ve koloni zihni. Dokunma gücü 3 kat fazladır, üreme hızı devasa artar." },
+    { id: "bird", name: "🦅 Kuşlar (Avian)", icon: "🦅", trait: "Hava Hakimiyeti & Hız", desc: "Hafif içi boş kemikler ve uçuş kabiliyeti. Geniş avlanma sahası sayesinde hareket organları %100 daha etkilidir." }
+  ]
 };
 
 // --- NUMBER FORMATTER ---
@@ -620,30 +654,115 @@ function addLog(msg, isSpecial) {
   const item = document.createElement("div");
   item.className = "log-item" + (isSpecial ? " special" : "");
   item.innerText = msg;
-  if (list.insertBefore) {
-    list.insertBefore(item, list.firstChild);
-  } else if (list.prepend) {
-    list.prepend(item);
+  if (list.insertBefore) list.insertBefore(item, list.firstChild);
+  else list.appendChild(item);
+}
+
+// --- DYNAMIC CAPS ---
+function updateCaps() {
+  if (game.era === "cellular") {
+    let rna = 250 + (game.organelles.membrane.count * 150) + (game.organelles.cytoplasm.count * 100);
+    let atp = 100 + (game.organelles.membrane.count * 50);
+    let dna = 50 + (game.organelles.nucleus.count * 25) + (game.organelles.chromosome.count * 50);
+    if (game.research.histone && game.research.histone.bought) dna += 50;
+
+    game.res.rnaCap = rna;
+    game.res.atpCap = atp;
+    game.res.dnaCap = dna;
   } else {
-    list.appendChild(item);
+    let bio = 500 + (game.organs.tissue.count * 150);
+    if (game.selectedSpecies === "fungi") bio *= 2; // Fungi biomass trait
+    let sentience = 200 + (game.organs.ganglion.count * 50);
+    let atp = 200 + (game.organs.digestive.count * 50);
+
+    game.res.biomassCap = bio;
+    game.res.sentienceCap = sentience;
+    game.res.atpCap = atp;
   }
 }
 
+// --- METABOLIC SURGE (ATP SINK / BOOST) ---
+function activateSurge() {
+  if (game.res.atp >= 25 && game.surgeSecondsLeft <= 0) {
+    game.res.atp -= 25;
+    game.surgeSecondsLeft = 15;
+    showToast("⚡ Metabolik Aşırı Hız Aktif! (2x Üretim)");
+    addLog("Enerji Patlaması: ATP yakılarak metabolik hız 2 katına çıkarıldı!", true);
+    renderUI();
+  } else if (game.surgeSecondsLeft > 0) {
+    showToast("Aşırı hız zaten devrede!");
+  } else {
+    showToast("Yetersiz ATP! (25 ATP Gerekir)");
+  }
+}
+
+// --- PRODUCTION RATES ---
+function getMultiplier() {
+  return game.surgeSecondsLeft > 0 ? 2 : 1;
+}
+
+function getRnaRate() {
+  if (game.era !== "cellular") return 0;
+  let rate = (game.organelles.ribosome.count * 0.5) +
+             (game.organelles.cytoplasm.count * 1.2) +
+             (game.organelles.flagellum.count * 4.0);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate * getMultiplier();
+}
+
+function getDnaRate() {
+  if (game.era !== "cellular") return 0;
+  let rate = (game.organelles.nucleus.count * 0.2);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate * getMultiplier();
+}
+
+function getAtpRate() {
+  if (game.era === "cellular") {
+    let gen = (game.organelles.mitochondria.count * 1.2);
+    if (game.research.glycolysis.bought) gen += 0.5;
+    // Consumption
+    let consumption = (game.organelles.flagellum.count * 0.2);
+    return (gen - consumption) * getMultiplier();
+  } else {
+    let gen = 1.0 + (game.organs.digestive.count * 1.5);
+    if (game.selectedSpecies === "plant") gen += 2.0; // Plants make more ATP from sun
+    let con = (game.organs.muscles.count * 0.5);
+    if (game.selectedSpecies === "reptile") con *= 0.5; // Reptiles consume 50% less
+    return (gen - con) * getMultiplier();
+  }
+}
+
+function getBiomassRate() {
+  if (game.era !== "multicellular") return 0;
+  let rate = (game.organs.tissue.count * 1.5) + (game.organs.digestive.count * 3.0) + (game.organs.muscles.count * 5.0);
+  if (game.selectedSpecies === "plant") rate *= 1.75;
+  if (game.selectedSpecies === "fungi") rate *= 1.5;
+  return rate * getMultiplier();
+}
+
+function getSentienceRate() {
+  if (game.era !== "multicellular") return 0;
+  let rate = (game.organs.ganglion.count * 0.5);
+  if (game.selectedSpecies === "mammal") rate *= 2.0;
+  return rate * getMultiplier();
+}
+
 // --- COST FORMULAS ---
-function calculateCost(org, qty) {
+function calculateCost(item, qty) {
   let sum = 0;
   for (let i = 0; i < qty; i++) {
-    sum += Math.floor(org.baseCost * Math.pow(org.costMult, org.count + i));
+    sum += Math.floor(item.baseCost * Math.pow(item.costMult, item.count + i));
   }
   return sum;
 }
 
-function calculateMax(org) {
+function calculateMax(item) {
   let count = 0;
-  let res = game.res[org.costRes];
+  let res = game.res[item.costRes];
   let sum = 0;
   while (true) {
-    let next = Math.floor(org.baseCost * Math.pow(org.costMult, org.count + count));
+    let next = Math.floor(item.baseCost * Math.pow(item.costMult, item.count + count));
     if (sum + next <= res) {
       sum += next;
       count++;
@@ -652,7 +771,7 @@ function calculateMax(org) {
       break;
     }
   }
-  return { count: Math.max(1, count), cost: sum === 0 ? calculateCost(org, 1) : sum };
+  return { count: Math.max(1, count), cost: sum === 0 ? calculateCost(item, 1) : sum };
 }
 
 // --- TAB SWITCHER ---
@@ -668,7 +787,6 @@ function switchTab(tabId) {
   if (targetBtn) targetBtn.classList.add("active");
 }
 
-// --- MULTIPLIER SELECTOR ---
 function setMultiplier(m) {
   game.buyMult = m;
   document.querySelectorAll(".mult-btn").forEach(b => b.classList.remove("active"));
@@ -677,16 +795,25 @@ function setMultiplier(m) {
   renderUI();
 }
 
-// --- MAIN SYNTHESIS CLICK ---
-function handleSynthClick(e) {
-  if (game.res.rna < game.res.rnaCap) {
-    game.res.rna = Math.min(game.res.rnaCap, game.res.rna + game.clickPower);
+// --- PRIMARY SYNTHESIS CLICK ---
+function handlePrimaryClick(e) {
+  let gain = game.clickPower * getMultiplier();
+  if (game.selectedSpecies === "insect") gain *= 3; // Insect trait
+
+  if (game.era === "cellular") {
+    if (game.res.rna < game.res.rnaCap) {
+      game.res.rna = Math.min(game.res.rnaCap, game.res.rna + gain);
+    }
+  } else {
+    if (game.res.biomass < game.res.biomassCap) {
+      game.res.biomass = Math.min(game.res.biomassCap, game.res.biomass + gain);
+    }
   }
 
   // Floating text
   const floatEl = document.createElement("div");
   floatEl.className = "click-feedback";
-  floatEl.innerText = "+" + game.clickPower + " RNA";
+  floatEl.innerText = "+" + gain + (game.era === "cellular" ? " RNA" : " Biyokütle");
 
   const btn = document.getElementById("main-synth-btn");
   const rect = btn.getBoundingClientRect();
@@ -694,47 +821,33 @@ function handleSynthClick(e) {
   floatEl.style.top = (e && e.clientY ? e.clientY : rect.top + 10) + "px";
   document.body.appendChild(floatEl);
   setTimeout(() => {
-    if (floatEl && floatEl.parentNode) {
-      floatEl.parentNode.removeChild(floatEl);
-    }
+    if (floatEl && floatEl.parentNode) floatEl.parentNode.removeChild(floatEl);
   }, 600);
 
   renderUI();
 }
 
+// --- BUY STRUCTURE ACTION ---
+function handleBuyStructure(id) {
+  const collection = game.era === "cellular" ? game.organelles : game.organs;
+  const item = collection[id];
+  if (!item) return;
 
-// --- DYNAMIC CAPACITY RECALCULATION ---
-function updateCaps() {
-  let rna = 250 + (game.organelles.membrane.count * 150) + (game.organelles.cytoplasm.count * 100);
-  let atp = 100 + (game.organelles.membrane.count * 50);
-  let dna = 50 + (game.organelles.nucleus.count * 25) + (game.organelles.chromosome.count * 50);
-  
-  if (game.research.histone && game.research.histone.bought) {
-    dna += 50;
-  }
-  
-  game.res.rnaCap = rna;
-  game.res.atpCap = atp;
-  game.res.dnaCap = dna;
-}
+  let qty = game.buyMult === "max" ? calculateMax(item).count : game.buyMult;
+  let cost = game.buyMult === "max" ? calculateMax(item).cost : calculateCost(item, qty);
+  let totalAtpCost = (item.costAtp || 0) * qty;
 
-// --- BUY ORGANELLE ACTION ---
-function handleBuyOrganelle(id) {
-  const org = game.organelles[id];
-  if (!org) return;
-
-  let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
-  let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
-
-  if (game.res[org.costRes] >= cost) {
-    game.res[org.costRes] -= cost;
-    org.count += qty;
+  if (game.res[item.costRes] >= cost && game.res.atp >= totalAtpCost) {
+    game.res[item.costRes] -= cost;
+    game.res.atp -= totalAtpCost;
+    item.count += qty;
 
     updateCaps();
-
-    addLog(qty + "x " + org.name + " üretildi.");
-    showToast("+" + qty + " " + org.name);
+    addLog(qty + "x " + item.name + " geliştirildi.");
+    showToast("+" + qty + " " + item.name);
     renderUI();
+  } else if (game.res.atp < totalAtpCost) {
+    showToast("Yetersiz ATP Enerjisi!");
   }
 }
 
@@ -743,32 +856,197 @@ function handleBuyResearch(id) {
   const tech = game.research[id];
   if (!tech || tech.bought) return;
 
-  if (game.res.rna >= tech.costRna && game.res.dna >= tech.costDna) {
+  if (game.res.rna >= tech.costRna && game.res.dna >= tech.costDna && game.res.atp >= tech.costAtp) {
     game.res.rna -= tech.costRna;
     game.res.dna -= tech.costDna;
+    game.res.atp -= tech.costAtp;
     tech.bought = true;
 
     if (id === "permeability") game.clickPower += 1;
     if (id === "phagocytosis") game.clickPower += 5;
     if (id === "histone") updateCaps();
+    
+    // TRANSITION TO MULTICELLULAR ERA!
     if (id === "multicellularity") {
-      showToast("Tebrikler! Çok Hücreli Çağa ulaştınız!");
-      addLog("DEVRİM: Çok Hücreli Çağ başladı! Yakında 2. Çağ gelecek.", true);
+      game.era = "multicellular";
+      game.clickPower = 2;
+      showToast("🎉 DEVRİM: Çok Hücreli Çağa Ulaştınız!");
+      addLog("BİYOLOJİK SIÇRAMA: Hücreler birleşti, ilk dokular ve organlar oluşmaya başladı!", true);
+      updateCaps();
+      setupEraUI();
+    } else {
+      showToast(tech.name + " mutasyonu tamamlandı!");
+      addLog("Evrim: " + tech.name + " kazanıldı.", true);
     }
 
-    showToast(tech.name + " açıldı!");
-    addLog("Evrim: " + tech.name + " tamamlandı.", true);
     renderUI();
   }
 }
 
-// --- CHEAT FOR TESTING ---
-function cheatRna() {
-  if (game.res.rnaCap < 2000) game.res.rnaCap = 2000;
-  if (game.res.dnaCap < 500) game.res.dnaCap = 500;
-  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + 1000);
-  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + 100);
-  showToast("+1000 RNA & +100 DNA eklendi!");
+// --- SPECIES SELECTION ---
+function selectSpecies(specId) {
+  game.selectedSpecies = specId;
+  const spec = game.speciesList.find(s => s.id === specId);
+  updateCaps();
+  showToast(spec.name + " türüne evrildiniz!");
+  addLog("EVRİM TERCİHİ: Medeniyetiniz " + spec.name + " familyasında ilerleyecek. Özellik: " + spec.trait, true);
+  document.getElementById("era-badge").innerText = spec.name;
+  buildSpeciesCards();
+  renderUI();
+}
+
+// --- UI SETUP FOR ERAS ---
+function setupEraUI() {
+  const resGrid = document.getElementById("res-grid");
+  const synthBtn = document.getElementById("main-synth-btn");
+  const synthIcon = document.getElementById("synth-icon");
+  const synthTitle = document.getElementById("synth-title");
+  const navIconPrimary = document.getElementById("nav-icon-primary");
+  const navLabelPrimary = document.getElementById("nav-label-primary");
+  const structTitle = document.getElementById("structures-title");
+  const eraBadge = document.getElementById("era-badge");
+  const speciesSection = document.getElementById("species-section");
+
+  if (game.era === "multicellular") {
+    eraBadge.innerText = game.selectedSpecies ? game.speciesList.find(s => s.id === game.selectedSpecies).name : "🦀 Çok Hücreli Çağ";
+    eraBadge.style.color = "var(--accent-bio)";
+    eraBadge.style.borderColor = "var(--accent-bio)";
+
+    // Update resources header: RNA replaced with Biomass, DNA replaced with Sentience (Zeka)
+    resGrid.innerHTML = `
+      <div class="res-pill res-bio">
+        <div class="res-label"><span>Biyokütle</span><span id="label-bio-cap">/ ${formatNumber(game.res.biomassCap)}</span></div>
+        <div class="res-val" id="val-bio">${formatNumber(game.res.biomass)}</div>
+        <div class="res-rate" id="rate-bio">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-dna">
+        <div class="res-label"><span>Zeka / Bilinç</span><span id="label-sen-cap">/ ${formatNumber(game.res.sentienceCap)}</span></div>
+        <div class="res-val" id="val-sen">${formatNumber(game.res.sentience)}</div>
+        <div class="res-rate" id="rate-sen">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-atp">
+        <div class="res-label"><span>Metabolizma (ATP)</span><span id="label-atp-cap">/ ${formatNumber(game.res.atpCap)}</span></div>
+        <div class="res-val" id="val-atp">${formatNumber(game.res.atp)}</div>
+        <div class="res-rate" id="rate-atp">+0.0/sn</div>
+      </div>
+    `;
+
+    // Synth Button
+    synthBtn.classList.add("bio-mode");
+    synthIcon.innerText = "🥩";
+    synthTitle.innerText = "Biyokütle Bölünmesi Gerçekleştir";
+    navIconPrimary.innerText = "🐾";
+    navLabelPrimary.innerText = "Beden";
+    structTitle.innerText = "Organlar & Vücut Sistemleri";
+
+    // Show Species Selection section in Research tab
+    if (speciesSection) {
+      speciesSection.style.display = "flex";
+      buildSpeciesCards();
+    }
+  } else {
+    eraBadge.innerText = "🌱 Pre-Biyotik Çorba";
+  }
+
+  buildStructureCards();
+  buildResearchCards();
+}
+
+// --- CARD BUILDERS ---
+function buildStructureCards() {
+  const container = document.getElementById("structures-container");
+  container.innerHTML = "";
+
+  const collection = game.era === "cellular" ? game.organelles : game.organs;
+
+  for (let id in collection) {
+    const item = collection[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${item.name}</span>
+        <span class="item-count" id="count-${id}">x${item.count}</span>
+      </div>
+      <p class="item-desc">${item.desc}</p>
+      <div class="item-effect">${item.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost" id="cost-${id}">0</span>
+        <button class="action-btn" id="btn-buy-${id}" onclick="handleBuyStructure('${id}')">Geliştir</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function buildResearchCards() {
+  const container = document.getElementById("research-container");
+  container.innerHTML = "";
+
+  for (let id in game.research) {
+    const tech = game.research[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+
+    let costs = [];
+    if (tech.costRna > 0) costs.push(tech.costRna + " RNA");
+    if (tech.costDna > 0) costs.push(tech.costDna + " DNA");
+    if (tech.costAtp > 0) costs.push(tech.costAtp + " ATP");
+
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${tech.name}</span>
+      </div>
+      <p class="item-desc">${tech.desc}</p>
+      <div class="item-effect">${tech.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost">${costs.join(" + ")}</span>
+        <button class="action-btn" id="btn-tech-${id}" onclick="handleBuyResearch('${id}')">Mutasyon Yap</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function buildSpeciesCards() {
+  const container = document.getElementById("species-cards-container");
+  if (!container) return;
+  container.innerHTML = "";
+
+  game.speciesList.forEach(spec => {
+    const card = document.createElement("div");
+    card.className = "species-card" + (game.selectedSpecies === spec.id ? " selected" : "");
+    card.onclick = () => selectSpecies(spec.id);
+
+    card.innerHTML = `
+      <div class="species-title">
+        <span>${spec.icon}</span>
+        <span>${spec.name}</span>
+        ${game.selectedSpecies === spec.id ? '<span style="color:var(--accent-rna); margin-left:auto;">✓ Seçildi</span>' : ''}
+      </div>
+      <div class="species-trait">Özellik: ${spec.trait}</div>
+      <p class="item-desc">${spec.desc}</p>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// --- CHEAT HELPERS ---
+function cheatAdd(resType, amount) {
+  if (resType === 'rna') {
+    game.res.rnaCap = Math.max(game.res.rnaCap, 2500);
+    game.res.rna = Math.min(game.res.rnaCap, game.res.rna + amount);
+  } else if (resType === 'dna') {
+    game.res.dnaCap = Math.max(game.res.dnaCap, 500);
+    game.res.dna = Math.min(game.res.dnaCap, game.res.dna + amount);
+  } else if (resType === 'atp') {
+    game.res.atpCap = Math.max(game.res.atpCap, 300);
+    game.res.atp = Math.min(game.res.atpCap, game.res.atp + amount);
+  } else if (resType === 'bio') {
+    game.res.biomassCap = Math.max(game.res.biomassCap, 2000);
+    game.res.biomass = Math.min(game.res.biomassCap, game.res.biomass + amount);
+  }
+  showToast("+" + amount + " " + resType.toUpperCase() + " eklendi!");
   renderUI();
 }
 
@@ -778,64 +1056,91 @@ function forceSave() {
 }
 
 function resetSave() {
-  if (confirm("Oyun sıfırlansın mı?")) {
+  if (confirm("Tüm oyun sıfırlansın mı?")) {
     safeStore.remove("evolve_mobile_save");
     location.reload();
   }
 }
 
-// --- RATES ---
-function getRnaRate() {
-  let rate = (game.organelles.ribosome.count * 0.5) +
-             (game.organelles.cytoplasm.count * 1.2) +
-             (game.organelles.flagellum.count * 3.5);
-  if (game.research.eukaryote.bought) rate *= 1.5;
-  return rate;
-}
-
-function getDnaRate() {
-  let rate = (game.organelles.nucleus.count * 0.2);
-  if (game.research.eukaryote.bought) rate *= 1.5;
-  return rate;
-}
-
-function getAtpRate() {
-  let rate = (game.organelles.mitochondria.count * 1.0);
-  if (game.research.glycolysis.bought) rate += 0.3;
-  return rate;
-}
-
 // --- RENDER FUNCTION ---
 function renderUI() {
-  // Resources
-  document.getElementById("val-rna").innerText = formatNumber(game.res.rna);
-  document.getElementById("label-rna-cap").innerText = "/ " + formatNumber(game.res.rnaCap);
-  document.getElementById("val-dna").innerText = formatNumber(game.res.dna);
-  document.getElementById("label-dna-cap").innerText = "/ " + formatNumber(game.res.dnaCap);
-  document.getElementById("val-atp").innerText = formatNumber(game.res.atp);
-  document.getElementById("label-atp-cap").innerText = "/ " + formatNumber(game.res.atpCap);
+  if (game.era === "cellular") {
+    const elRna = document.getElementById("val-rna");
+    if (elRna) elRna.innerText = formatNumber(game.res.rna);
+    const elRnaCap = document.getElementById("label-rna-cap");
+    if (elRnaCap) elRnaCap.innerText = "/ " + formatNumber(game.res.rnaCap);
 
-  document.getElementById("rate-rna").innerText = "+" + getRnaRate().toFixed(1) + "/sn";
-  document.getElementById("rate-dna").innerText = "+" + getDnaRate().toFixed(1) + "/sn";
-  document.getElementById("rate-atp").innerText = "+" + getAtpRate().toFixed(1) + "/sn";
+    const elDna = document.getElementById("val-dna");
+    if (elDna) elDna.innerText = formatNumber(game.res.dna);
+    const elDnaCap = document.getElementById("label-dna-cap");
+    if (elDnaCap) elDnaCap.innerText = "/ " + formatNumber(game.res.dnaCap);
 
-  document.getElementById("synth-info").innerText = "+" + game.clickPower + " RNA üretmek için dokun";
+    const elRateRna = document.getElementById("rate-rna");
+    if (elRateRna) elRateRna.innerText = "+" + getRnaRate().toFixed(1) + "/sn";
+    const elRateDna = document.getElementById("rate-dna");
+    if (elRateDna) elRateDna.innerText = "+" + getDnaRate().toFixed(1) + "/sn";
 
-  // Organelles
-  for (let id in game.organelles) {
-    const org = game.organelles[id];
+    document.getElementById("synth-info").innerText = "+" + (game.clickPower * getMultiplier()) + " RNA üretmek için dokun";
+  } else {
+    const elBio = document.getElementById("val-bio");
+    if (elBio) elBio.innerText = formatNumber(game.res.biomass);
+    const elBioCap = document.getElementById("label-bio-cap");
+    if (elBioCap) elBioCap.innerText = "/ " + formatNumber(game.res.biomassCap);
+
+    const elSen = document.getElementById("val-sen");
+    if (elSen) elSen.innerText = formatNumber(game.res.sentience);
+    const elSenCap = document.getElementById("label-sen-cap");
+    if (elSenCap) elSenCap.innerText = "/ " + formatNumber(game.res.sentienceCap);
+
+    const elRateBio = document.getElementById("rate-bio");
+    if (elRateBio) elRateBio.innerText = "+" + getBiomassRate().toFixed(1) + "/sn";
+    const elRateSen = document.getElementById("rate-sen");
+    if (elRateSen) elRateSen.innerText = "+" + getSentienceRate().toFixed(1) + "/sn";
+
+    document.getElementById("synth-info").innerText = "+" + (game.clickPower * getMultiplier() * (game.selectedSpecies === "insect" ? 3 : 1)) + " Biyokütle üret";
+  }
+
+  // ATP
+  const elAtp = document.getElementById("val-atp");
+  if (elAtp) elAtp.innerText = formatNumber(game.res.atp);
+  const elAtpCap = document.getElementById("label-atp-cap");
+  if (elAtpCap) elAtpCap.innerText = "/ " + formatNumber(game.res.atpCap);
+  const elRateAtp = document.getElementById("rate-atp");
+  if (elRateAtp) elRateAtp.innerText = (getAtpRate() >= 0 ? "+" : "") + getAtpRate().toFixed(1) + "/sn";
+
+  // Surge Timer
+  const surgeBadge = document.getElementById("surge-timer");
+  const btnSurge = document.getElementById("btn-surge");
+  if (game.surgeSecondsLeft > 0) {
+    surgeBadge.innerText = Math.ceil(game.surgeSecondsLeft) + " sn kaldı (2x)";
+    surgeBadge.style.color = "var(--accent-rna)";
+    btnSurge.classList.add("disabled");
+  } else {
+    surgeBadge.innerText = "Hazır";
+    surgeBadge.style.color = "var(--accent-atp)";
+    if (game.res.atp >= 25) btnSurge.classList.remove("disabled");
+    else btnSurge.classList.add("disabled");
+  }
+
+  // Update Structures Buy Buttons
+  const collection = game.era === "cellular" ? game.organelles : game.organs;
+  for (let id in collection) {
+    const item = collection[id];
     const btn = document.getElementById("btn-buy-" + id);
     const costEl = document.getElementById("cost-" + id);
     const countEl = document.getElementById("count-" + id);
 
     if (btn && costEl) {
-      let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
-      let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
+      let qty = game.buyMult === "max" ? calculateMax(item).count : game.buyMult;
+      let cost = game.buyMult === "max" ? calculateMax(item).cost : calculateCost(item, qty);
+      let atpCost = (item.costAtp || 0) * qty;
 
-      costEl.innerText = formatNumber(cost) + " RNA";
-      countEl.innerText = "x" + org.count;
+      let costStr = formatNumber(cost) + (item.costRes === "rna" ? " RNA" : " Biyokütle");
+      if (atpCost > 0) costStr += " + " + atpCost + " ATP";
+      costEl.innerText = costStr;
+      countEl.innerText = "x" + item.count;
 
-      if (game.res.rna >= cost) {
+      if (game.res[item.costRes] >= cost && game.res.atp >= atpCost) {
         btn.classList.remove("disabled");
         costEl.classList.remove("red");
       } else {
@@ -845,7 +1150,7 @@ function renderUI() {
     }
   }
 
-  // Research
+  // Update Research Buttons
   for (let id in game.research) {
     const tech = game.research[id];
     const btn = document.getElementById("btn-tech-" + id);
@@ -855,67 +1160,11 @@ function renderUI() {
         btn.classList.add("disabled");
         btn.style.background = "#059669";
       } else {
-        const canAfford = game.res.rna >= tech.costRna && game.res.dna >= tech.costDna;
-        if (canAfford) {
-          btn.classList.remove("disabled");
-        } else {
-          btn.classList.add("disabled");
-        }
+        const canAfford = game.res.rna >= tech.costRna && game.res.dna >= tech.costDna && game.res.atp >= tech.costAtp;
+        if (canAfford) btn.classList.remove("disabled");
+        else btn.classList.add("disabled");
       }
     }
-  }
-}
-
-// --- BUILD HTML CARDS ---
-function buildOrganelleCards() {
-  const container = document.getElementById("organelle-cards-container");
-  container.innerHTML = "";
-
-  for (let id in game.organelles) {
-    const org = game.organelles[id];
-    const card = document.createElement("div");
-    card.className = "item-card";
-    card.innerHTML = `
-      <div class="item-header">
-        <span class="item-title">${org.name}</span>
-        <span class="item-count" id="count-${id}">x${org.count}</span>
-      </div>
-      <p class="item-desc">${org.desc}</p>
-      <div class="item-effect">${org.effect}</div>
-      <div class="item-footer">
-        <span class="item-cost" id="cost-${id}">0 RNA</span>
-        <button class="action-btn" id="btn-buy-${id}" onclick="handleBuyOrganelle('${id}')">Geliştir</button>
-      </div>
-    `;
-    container.appendChild(card);
-  }
-}
-
-function buildResearchCards() {
-  const container = document.getElementById("research-cards-container");
-  container.innerHTML = "";
-
-  for (let id in game.research) {
-    const tech = game.research[id];
-    const card = document.createElement("div");
-    card.className = "item-card";
-
-    let costTexts = [];
-    if (tech.costRna > 0) costTexts.push(tech.costRna + " RNA");
-    if (tech.costDna > 0) costTexts.push(tech.costDna + " DNA");
-
-    card.innerHTML = `
-      <div class="item-header">
-        <span class="item-title">${tech.name}</span>
-      </div>
-      <p class="item-desc">${tech.desc}</p>
-      <div class="item-effect">${tech.effect}</div>
-      <div class="item-footer">
-        <span class="item-cost">${costTexts.join(" + ")}</span>
-        <button class="action-btn" id="btn-tech-${id}" onclick="handleBuyResearch('${id}')">Mutasyon Yap</button>
-      </div>
-    `;
-    container.appendChild(card);
   }
 }
 
@@ -925,9 +1174,20 @@ function gameTick() {
   const dt = (now - game.lastTick) / 1000;
   game.lastTick = now;
 
-  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + getRnaRate() * dt);
-  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + getDnaRate() * dt);
-  game.res.atp = Math.min(game.res.atpCap, game.res.atp + getAtpRate() * dt);
+  if (game.surgeSecondsLeft > 0) {
+    game.surgeSecondsLeft = Math.max(0, game.surgeSecondsLeft - dt);
+  }
+
+  if (game.era === "cellular") {
+    game.res.rna = Math.min(game.res.rnaCap, game.res.rna + getRnaRate() * dt);
+    game.res.dna = Math.min(game.res.dnaCap, game.res.dna + getDnaRate() * dt);
+  } else {
+    game.res.biomass = Math.min(game.res.biomassCap, game.res.biomass + getBiomassRate() * dt);
+    game.res.sentience = Math.min(game.res.sentienceCap, game.res.sentience + getSentienceRate() * dt);
+  }
+
+  // ATP changes
+  game.res.atp = Math.max(0, Math.min(game.res.atpCap, game.res.atp + getAtpRate() * dt));
 
   renderUI();
 }
@@ -942,6 +1202,8 @@ function loadGameState() {
   if (raw) {
     try {
       const data = JSON.parse(raw);
+      if (data.era) game.era = data.era;
+      if (data.selectedSpecies) game.selectedSpecies = data.selectedSpecies;
       if (data.res) Object.assign(game.res, data.res);
       if (data.clickPower) game.clickPower = data.clickPower;
       if (data.organelles) {
@@ -949,60 +1211,62 @@ function loadGameState() {
           if (game.organelles[k]) game.organelles[k].count = data.organelles[k].count;
         }
       }
+      if (data.organs) {
+        for (let k in data.organs) {
+          if (game.organs[k]) game.organs[k].count = data.organs[k].count;
+        }
+      }
       if (data.research) {
         for (let k in data.research) {
           if (game.research[k]) game.research[k].bought = data.research[k].bought;
         }
       }
-      updateCaps();
 
       if (data.lastTick) {
         const diffSec = Math.min(86400, (Date.now() - data.lastTick) / 1000);
         if (diffSec > 10) {
-          const rnaGained = Math.min(game.res.rnaCap - game.res.rna, getRnaRate() * diffSec);
-          game.res.rna += rnaGained;
-          showToast("Hoş geldin! +" + formatNumber(rnaGained) + " RNA toplandı.");
+          if (game.era === "cellular") {
+            const rnaGained = Math.min(game.res.rnaCap - game.res.rna, getRnaRate() * diffSec);
+            game.res.rna += rnaGained;
+            showToast("Hoş geldin! +" + formatNumber(rnaGained) + " RNA toplandı.");
+          } else {
+            const bioGained = Math.min(game.res.biomassCap - game.res.biomass, getBiomassRate() * diffSec);
+            game.res.biomass += bioGained;
+            showToast("Hoş geldin! +" + formatNumber(bioGained) + " Biyokütle toplandı.");
+          }
         }
       }
-    } catch (e) {
+    } catch(e) {
       console.error("Load failed", e);
     }
   }
 }
 
-// --- BOOTSTRAP (RUNS ONCE JAVASCRIPT IS ACTIVE) ---
-window.addEventListener("DOMContentLoaded", function() {
-  // 1. Hide the warning banner because JavaScript is working!
-  const banner = document.getElementById("js-disabled-banner");
-  if (banner) banner.style.display = "none";
-
-  // 2. Set status badge to Active
-  const badge = document.getElementById("js-status-badge");
-  if (badge) {
-    badge.innerHTML = '<span class="pulse-dot"></span><span>Motor: Aktif (Çalışıyor)</span>';
-  }
-
-  // 3. Build UI & Start
-  buildOrganelleCards();
-  buildResearchCards();
-  loadGameState();
-  updateCaps();
-  renderUI();
-
-  // 4. Timers
-  setInterval(gameTick, 100);
-  setInterval(saveGameState, 5000);
-  
-window.handleSynthClick = handleSynthClick;
-window.handleBuyOrganelle = handleBuyOrganelle;
+// --- ATTACH TO WINDOW ---
+window.handlePrimaryClick = handlePrimaryClick;
+window.handleBuyStructure = handleBuyStructure;
 window.handleBuyResearch = handleBuyResearch;
+window.selectSpecies = selectSpecies;
+window.activateSurge = activateSurge;
 window.switchTab = switchTab;
 window.setMultiplier = setMultiplier;
-window.cheatRna = cheatRna;
+window.cheatAdd = cheatAdd;
 window.forceSave = forceSave;
 window.resetSave = resetSave;
 
-console.log("Evolve Mobile Engine initialized successfully!");
+// --- BOOTSTRAP ---
+window.addEventListener("DOMContentLoaded", function() {
+  const banner = document.getElementById("js-disabled-banner");
+  if (banner) banner.style.display = "none";
+
+  loadGameState();
+  updateCaps();
+  setupEraUI();
+  renderUI();
+
+  setInterval(gameTick, 100);
+  setInterval(saveGameState, 5000);
+  console.log("Evolve Mobile Engine v4 initialized!");
 });
 </script>
 </body>
