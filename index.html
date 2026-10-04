@@ -5,17 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Evolve Mobile</title>
+  <title>Evolve Mobile - Hücre Çağı</title>
   <style>
     :root {
       --bg: #090d16;
       --card-bg: #131b2e;
       --card-border: #1e293b;
-      --accent-primary: #10b981;
-      --accent-secondary: #38bdf8;
-      --accent-energy: #f59e0b;
-      --accent-wood: #a16207;
-      --accent-stone: #94a3b8;
+      --accent-rna: #10b981;
+      --accent-dna: #38bdf8;
+      --accent-atp: #f59e0b;
       --accent-text: #f8fafc;
       --muted: #64748b;
       --danger: #ef4444;
@@ -47,17 +45,40 @@
       box-shadow: 0 0 30px rgba(0,0,0,0.8);
     }
 
+    /* Drive Preview Warning Banner */
     #js-disabled-banner {
       background: #b91c1c;
       color: white;
-      padding: 12px 14px;
-      font-size: 12px;
+      padding: 14px 16px;
+      font-size: 13px;
       font-weight: 700;
       text-align: center;
       line-height: 1.4;
+      border-bottom: 2px solid #ef4444;
       display: block;
     }
 
+    #js-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent-rna);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-rna);
+      box-shadow: 0 0 8px var(--accent-rna);
+    }
+
+    /* Top Sticky Header */
     header {
       background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(10px);
@@ -65,7 +86,7 @@
       padding: 10px 14px;
       z-index: 100;
     }
-    .header-top {
+    .game-header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -76,54 +97,46 @@
       font-weight: 800;
       letter-spacing: 0.5px;
       color: #94a3b8;
+      text-transform: uppercase;
     }
-    .era-badge {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--accent-primary);
-      background: rgba(16, 185, 129, 0.12);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-
     .resources-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 6px;
-    }
-    .resources-grid.grid-4 {
-      grid-template-columns: repeat(4, 1fr);
     }
     .res-pill {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 8px;
-      padding: 5px 7px;
+      padding: 6px 8px;
       display: flex;
       flex-direction: column;
     }
     .res-label {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 600;
       color: var(--muted);
       display: flex;
       justify-content: space-between;
     }
     .res-val {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 700;
-      margin-top: 1px;
+      margin-top: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .res-rate {
-      font-size: 9px;
+      font-size: 10px;
       font-weight: 500;
       color: #94a3b8;
     }
+    .res-rna .res-val { color: var(--accent-rna); }
+    .res-dna .res-val { color: var(--accent-dna); }
+    .res-atp .res-val { color: var(--accent-atp); }
 
+    /* Main Scroll Area */
     main {
       flex: 1;
       overflow-y: auto;
@@ -134,34 +147,29 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* Big Clicker Button */
     .synth-btn {
       width: 100%;
       background: linear-gradient(135deg, #059669 0%, #10b981 100%);
       color: white;
       border: none;
       border-radius: 14px;
-      padding: 15px;
-      font-size: 15px;
+      padding: 16px;
+      font-size: 16px;
       font-weight: 800;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
       box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
       transition: transform 0.05s ease, filter 0.05s ease;
+      position: relative;
+      user-select: none;
     }
     .synth-btn:active {
       transform: scale(0.96);
-      filter: brightness(0.9);
-    }
-    .synth-btn.bio-theme {
-      background: linear-gradient(135deg, #db2777 0%, #ec4899 100%);
-      box-shadow: 0 6px 18px rgba(236, 72, 153, 0.35);
-    }
-    .synth-btn.tribal-theme {
-      background: linear-gradient(135deg, #b45309 0%, #d97706 100%);
-      box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+      filter: brightness(0.88);
     }
     .synth-btn .sub {
       font-size: 11px;
@@ -170,6 +178,7 @@
       display: block;
     }
 
+    /* Multiplier Bar */
     .multiplier-bar {
       display: flex;
       justify-content: space-between;
@@ -196,6 +205,7 @@
       border-color: #0284c7;
     }
 
+    /* Item Card */
     .section-title {
       font-size: 12px;
       font-weight: 800;
@@ -204,7 +214,6 @@
       letter-spacing: 0.5px;
       margin-top: 4px;
     }
-
     .item-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -243,7 +252,7 @@
     }
     .item-effect {
       font-size: 11px;
-      color: var(--accent-primary);
+      color: var(--accent-rna);
       font-weight: 600;
     }
     .item-footer {
@@ -255,7 +264,7 @@
       border-top: 1px solid rgba(255,255,255,0.05);
     }
     .item-cost {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       color: #e2e8f0;
     }
@@ -271,117 +280,25 @@
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      min-width: 80px;
+      min-width: 75px;
       text-align: center;
       transition: transform 0.05s ease, background 0.1s ease;
     }
     .action-btn:active {
       transform: scale(0.95);
     }
-    .action-btn.disabled {
+    .action-btn.disabled, .action-btn:disabled {
       background: #1e293b !important;
       color: #64748b !important;
       cursor: not-allowed;
+      transform: none;
       border: 1px solid #334155;
     }
     .action-btn.green {
       background: #059669;
     }
 
-    /* Worker Job Cards (Era 3) */
-    .job-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 10px 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .job-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .job-title {
-      font-size: 13px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .job-rate {
-      font-size: 10px;
-      color: #38bdf8;
-      font-weight: 600;
-    }
-    .job-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .job-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--card-border);
-      background: #1e293b;
-      color: white;
-      font-size: 16px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-    .job-btn:active {
-      transform: scale(0.92);
-      background: #334155;
-    }
-    .job-btn.disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .job-count-badge {
-      font-size: 13px;
-      font-weight: 800;
-      color: var(--accent-text);
-      min-width: 24px;
-      text-align: center;
-    }
-
-    /* Species Choice Cards */
-    .species-card {
-      background: #1e293b;
-      border: 2px solid #334155;
-      border-radius: 14px;
-      padding: 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    .species-card:active {
-      transform: scale(0.98);
-    }
-    .species-card.selected {
-      border-color: #ec4899;
-      background: rgba(236, 72, 153, 0.08);
-    }
-    .species-title {
-      font-size: 14px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .species-trait {
-      font-size: 11px;
-      font-weight: 700;
-      color: #38bdf8;
-    }
-
+    /* Tabs */
     .tab-pane {
       display: none;
       flex-direction: column;
@@ -391,6 +308,7 @@
       display: flex;
     }
 
+    /* Bottom Nav Bar */
     nav.bottom-nav {
       position: absolute;
       bottom: 0;
@@ -418,12 +336,17 @@
       cursor: pointer;
     }
     .nav-tab.active {
-      color: var(--accent-primary);
+      color: var(--accent-rna);
+    }
+    .nav-tab.active .nav-icon {
+      transform: scale(1.15);
     }
     .nav-icon {
       font-size: 18px;
+      transition: transform 0.1s;
     }
 
+    /* Logs */
     .log-container {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -443,31 +366,33 @@
       line-height: 1.35;
     }
     .log-item.special {
-      color: var(--accent-secondary);
-      border-left-color: var(--accent-secondary);
+      color: var(--accent-dna);
+      border-left-color: var(--accent-dna);
     }
 
+    /* Floating Click Indicator */
     .click-feedback {
       position: fixed;
       font-weight: 800;
-      font-size: 15px;
-      color: var(--accent-primary);
+      font-size: 16px;
+      color: var(--accent-rna);
       pointer-events: none;
       animation: floatFade 0.6s ease-out forwards;
       z-index: 999;
     }
     @keyframes floatFade {
       0% { opacity: 1; transform: translate(-50%, 0); }
-      100% { opacity: 0; transform: translate(-50%, -40px) scale(1.15); }
+      100% { opacity: 0; transform: translate(-50%, -40px) scale(1.2); }
     }
 
+    /* Toast */
     #toast-msg {
       position: fixed;
       top: 80px;
       left: 50%;
       transform: translateX(-50%);
       background: #1e293b;
-      border: 1px solid var(--accent-primary);
+      border: 1px solid var(--accent-rna);
       color: white;
       padding: 8px 16px;
       border-radius: 20px;
@@ -483,60 +408,54 @@
 <body>
 
 <div id="app-container">
+  <!-- Warning Banner: Visible only if JS is blocked (like in Google Drive preview) -->
   <div id="js-disabled-banner">
-    ⚠️ <b>DİKKAT:</b> Google Drive önizleme ekranındasınız. Lütfen sayfayı <b>https://trialbyright.github.io/evolve-mobile/</b> adresinden açın!
+    ⚠️ <b>DİKKAT:</b> Google Drive önizleme ekranındasınız. Google Drive güvenlik gereği buton kodlarını çalıştırmaz.<br>
+    <b>Nasıl Oynanır:</b> Sağ üstteki <b>İndir</b> butonuna basın, inen <code>.html</code> dosyasını doğrudan Chrome veya Safari tarayıcınızda açın!
   </div>
 
+  <!-- Header -->
   <header>
-    <div class="header-top">
-      <span class="game-title">EVOLVE: EVRİM ÇAĞI</span>
-      <span class="era-badge" id="era-badge">🌱 1. Çağ: Hücre</span>
+    <div class="game-header-top">
+      <span class="game-title">EVOLVE: HÜCRE ÇAĞI</span>
+      <span id="js-status-badge">
+        <span class="pulse-dot"></span>
+        <span>Motor: Başlatılıyor...</span>
+      </span>
     </div>
-    <div class="resources-grid" id="res-grid">
-      <!-- Injected -->
+    <div class="resources-grid">
+      <div class="res-pill res-rna">
+        <div class="res-label"><span>RNA</span><span id="label-rna-cap">/ 250</span></div>
+        <div class="res-val" id="val-rna">50</div>
+        <div class="res-rate" id="rate-rna">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-dna">
+        <div class="res-label"><span>DNA</span><span id="label-dna-cap">/ 50</span></div>
+        <div class="res-val" id="val-dna">0</div>
+        <div class="res-rate" id="rate-dna">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-atp">
+        <div class="res-label"><span>ATP Enerji</span><span id="label-atp-cap">/ 100</span></div>
+        <div class="res-val" id="val-atp">0</div>
+        <div class="res-rate" id="rate-atp">+0.0/sn</div>
+      </div>
     </div>
   </header>
 
+  <!-- Main View -->
   <main id="main-area">
-    <!-- Primary Tab (Hücre / Beden / Kabile) -->
-    <div id="tab-primary" class="tab-pane active">
-      <button class="synth-btn" id="main-synth-btn" onclick="handlePrimaryClick(event)">
-        <span style="font-size:26px;" id="synth-icon">🧬</span>
+    <!-- Tab 1: Hücre & Organeller -->
+    <div id="tab-organelles" class="tab-pane active">
+      <button class="synth-btn" id="main-synth-btn" onclick="handleSynthClick(event)">
+        <span style="font-size:26px;">🧬</span>
         <span>
-          <span id="synth-title">Primordiyal Çorbayı Sentezle</span>
+          <span>Primordiyal Çorbayı Sentezle</span>
           <span class="sub" id="synth-info">+1 RNA üretmek için dokun</span>
         </span>
       </button>
 
-      <!-- Metabolic Surge (Era 1 Only) -->
-      <div id="surge-card" class="item-card" style="border-color: rgba(245, 158, 11, 0.4); background: rgba(245, 158, 11, 0.05);">
-        <div class="item-header">
-          <span class="item-title" style="color:var(--accent-energy);">⚡ Metabolik Aşırı Hız (ATP Kullanımı)</span>
-          <span class="item-count" id="surge-timer" style="color:var(--accent-energy); background:rgba(245, 158, 11, 0.15); border-color:var(--accent-energy);">Hazır</span>
-        </div>
-        <p class="item-desc">ATP enerjisi yakarak 15 saniye boyunca <b>üretimi ve dokunma gücünü 2 katına</b> çıkarır.</p>
-        <div class="item-footer">
-          <span class="item-cost" id="surge-cost">25 ATP</span>
-          <button class="action-btn" id="btn-surge" style="background:#d97706;" onclick="activateSurge()">Aşırı Hızla</button>
-        </div>
-      </div>
-
-      <!-- Worker Allocation Panel (Era 3 Only) -->
-      <div id="workers-panel" style="display:none; flex-direction:column; gap:8px;">
-        <div class="item-card" style="background: rgba(217, 119, 6, 0.06); border-color: rgba(217, 119, 6, 0.3);">
-          <div class="item-header">
-            <span class="item-title" style="color:#f59e0b;">👥 Kabile İş Gücü</span>
-            <span class="item-count" id="unassigned-badge" style="color:#f59e0b; background:rgba(245, 158, 11, 0.15); border-color:#f59e0b;">0 Boşta</span>
-          </div>
-          <p class="item-desc">Kabilendeki canlıları işlere ata. Aç kalmamaları için yeterli çiftçi ve besin toplayıcı atamayı unutma!</p>
-        </div>
-        <div id="jobs-container" style="display:flex; flex-direction:column; gap:8px;">
-          <!-- Injected Jobs -->
-        </div>
-      </div>
-
       <div class="multiplier-bar">
-        <span class="section-title" id="structures-title">Hücresel Organeller</span>
+        <span class="section-title">Organeller</span>
         <div class="mult-group">
           <button class="mult-btn active" id="btn-mult-1" onclick="setMultiplier(1)">1x</button>
           <button class="mult-btn" id="btn-mult-10" onclick="setMultiplier(10)">10x</button>
@@ -544,41 +463,32 @@
         </div>
       </div>
 
-      <div id="structures-container" style="display:flex; flex-direction:column; gap:10px;">
-        <!-- Injected -->
+      <div id="organelle-cards-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Dynamically rendered -->
       </div>
     </div>
 
-    <!-- Research Tab -->
+    <!-- Tab 2: Evrim & Araştırma -->
     <div id="tab-research" class="tab-pane">
-      <div class="section-title" id="research-title">Genetik Adaptasyon & Evrim</div>
-      <div id="research-container" style="display:flex; flex-direction:column; gap:10px;">
-        <!-- Injected -->
-      </div>
-
-      <!-- Species Selection (Era 2 Only) -->
-      <div id="species-section" style="display:none; flex-direction:column; gap:10px;">
-        <div class="section-title" style="color:#ec4899;">🌍 Familya Seçimi (Canlı Türü)</div>
-        <p class="item-desc" style="color:#cbd5e1;">Çok hücreli kolonin hangi ana familyaya evrileceğini seç. Seçtiğin tür kabile çağında eşsiz yetenekler ve işçiler kazandırır:</p>
-        <div id="species-cards-container" style="display:flex; flex-direction:column; gap:10px;">
-          <!-- 6 Species Cards -->
-        </div>
+      <div class="section-title">Genetik Adaptasyon & Evrim</div>
+      <div id="research-cards-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Dynamically rendered -->
       </div>
     </div>
 
-    <!-- Logs Tab -->
+    <!-- Tab 3: Günlük -->
     <div id="tab-logs" class="tab-pane">
-      <div class="section-title">Evrim Günlüğü</div>
+      <div class="section-title">Evrim Tarihçesi</div>
       <div class="log-container" id="log-list">
-        <div class="log-item special">0. Milyar Yıl: Sıcak volkanik okyanuslarda ilk organik moleküller bir araya geldi.</div>
+        <div class="log-item special">0. Gün: Sıcak volkanik çorba içinde ilk moleküler bağlar oluştu.</div>
       </div>
     </div>
 
-    <!-- Settings Tab -->
+    <!-- Tab 4: Ayarlar -->
     <div id="tab-settings" class="tab-pane">
       <div class="section-title">Oyun Kontrolleri</div>
       <div class="item-card">
-        <div class="item-title">💾 İlerleme Kaydı</div>
+        <div class="item-title">💾 İlerleme Kaydetme</div>
         <p class="item-desc">Oyun otomatik olarak her 5 saniyede bir tarayıcınıza kaydedilir.</p>
         <div style="display:flex; gap:8px; margin-top:8px;">
           <button class="action-btn green" onclick="forceSave()">Şimdi Kaydet</button>
@@ -587,21 +497,25 @@
       </div>
 
       <div class="item-card">
-        <div class="item-title">🧪 Hızlı Test Menüsü</div>
-        <p class="item-desc">Mekanikleri test etmek için tek tıkla kaynak ekle:</p>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">
-          <button class="action-btn" style="background:#475569;" onclick="cheatAdd('primary', 500)">+500 Ana Kaynak</button>
-          <button class="action-btn" style="background:#0284c7;" onclick="cheatAdd('secondary', 50)">+50 İkincil Kaynak</button>
-          <button class="action-btn" style="background:#d97706;" onclick="cheatAdd('energy', 50)">+50 Enerji/Besin</button>
+        <div class="item-title">📱 Mobil Kurulum İpucu</div>
+        <p class="item-desc">Bu oyunu Safari veya Chrome menüsünden <b>"Ana Ekrana Ekle" (Add to Home Screen)</b> derseniz, tam ekran bir mobil uygulama gibi çalışır.</p>
+      </div>
+
+      <div class="item-card">
+        <div class="item-title">🧪 Test Modu (+1000 RNA)</div>
+        <p class="item-desc">Bütün mekanikleri ve butonları anında hızlıca test etmek için:</p>
+        <div style="margin-top:8px;">
+          <button class="action-btn" style="background:#475569;" onclick="cheatRna()">+1000 RNA Ekle</button>
         </div>
       </div>
     </div>
   </main>
 
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <button class="nav-tab active" id="nav-btn-primary" onclick="switchTab('tab-primary')">
-      <span class="nav-icon" id="nav-icon-primary">🧬</span>
-      <span id="nav-label-primary">Hücre</span>
+    <button class="nav-tab active" id="nav-btn-organelles" onclick="switchTab('tab-organelles')">
+      <span class="nav-icon">🧬</span>
+      <span>Hücre</span>
     </button>
     <button class="nav-tab" id="nav-btn-research" onclick="switchTab('tab-research')">
       <span class="nav-icon">🔬</span>
@@ -617,143 +531,71 @@
     </button>
   </nav>
 
+  <!-- Toast -->
   <div id="toast-msg">Bildirim</div>
 </div>
 
 <script>
-// --- STORAGE WRAPPER ---
+// --- ROBUST IN-MEMORY & LOCAL STORAGE ENGINE ---
 const safeStore = {
-  get: function(k) {
-    try { if (typeof window !== 'undefined' && window.localStorage) return window.localStorage.getItem(k); } catch(e){}
+  get: function(key) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (e) {
+      console.warn("Storage read restricted", e);
+    }
     return null;
   },
-  set: function(k, v) {
-    try { if (typeof window !== 'undefined' && window.localStorage) window.localStorage.setItem(k, v); } catch(e){}
+  set: function(key, val) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, val);
+      }
+    } catch (e) {
+      console.warn("Storage write restricted", e);
+    }
   },
-  remove: function(k) {
-    try { if (typeof window !== 'undefined' && window.localStorage) window.localStorage.removeItem(k); } catch(e){}
+  remove: function(key) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch (e) {}
   }
 };
 
 // --- GAME STATE ---
 const game = {
-  era: "cellular", // "cellular" -> "multicellular" -> "tribal"
-  selectedSpecies: "mammal", // default fallback
-  surgeSecondsLeft: 0,
-  
-  // ERA 1: Cellular Resources
-  cellular: {
-    rna: 0,
-    rnaCap: 100,
+  res: {
+    rna: 50, // 50 Starter RNA so first buttons are immediately testable!
+    rnaCap: 250,
     dna: 0,
-    dnaCap: 40,
-    atp: 10,
-    atpCap: 60,
-    clickPower: 1
+    dnaCap: 50,
+    atp: 0,
+    atpCap: 100
   },
-
-  // ERA 2: Multicellular Resources (NO ATP)
-  multi: {
-    biomass: 0,
-    biomassCap: 300,
-    sentience: 0,
-    sentienceCap: 150,
-    food: 20,
-    foodCap: 100,
-    clickPower: 1
-  },
-
-  // ERA 3: Tribal / Settlement Resources (Wood, Stone, Food, Knowledge, Pop)
-  tribal: {
-    pop: 2,
-    popCap: 5,
-    food: 30,
-    foodCap: 150,
-    wood: 10,
-    woodCap: 120,
-    stone: 0,
-    stoneCap: 100,
-    knowledge: 0,
-    knowledgeCap: 80,
-    clickPower: 1
-  },
-
-  // ERA 3: Worker Job Allocation
-  jobs: {
-    farmer: { id: "farmer", name: "Çiftçi / Toplayıcı", count: 1, icon: "🌾", desc: "Besin toplar ve kabile üyelerini doyurur.", baseProd: "+0.6 Besin/sn" },
-    lumberjack: { id: "lumberjack", name: "Oduncu", count: 1, icon: "🪵", desc: "Barınaklar ve aletler için ormandan odun keser.", baseProd: "+0.3 Odun/sn" },
-    miner: { id: "miner", name: "Taşçı / Madenci", count: 0, icon: "🪨", desc: "Alet ve ambar yapmak için nehir yataklarından taş çıkarır.", baseProd: "+0.2 Taş/sn" },
-    shaman: { id: "shaman", name: "Şaman / Bilge", count: 0, icon: "🔮", desc: "Deneyimleri aktarır ve kabilenin yeni keşifler yapmasını sağlar.", baseProd: "+0.15 Bilgi/sn" },
-    specialist: { id: "specialist", name: "Türe Özel İşçi", count: 0, icon: "⭐", desc: "Seçtiğin familyanın eşsiz biyolojik avantajını kullanır.", baseProd: "Özel Üretim" }
-  },
-
+  clickPower: 1,
   buyMult: 1,
   lastTick: Date.now(),
-
-  // ERA 1 Organelles
   organelles: {
-    membrane: { id: "membrane", name: "Hücre Zarı", count: 0, baseCost: 10, costRes: "rna", costAtp: 0, costMult: 1.18, desc: "Zar yüzeyini genişleterek RNA ve besin depolama sınırını artırır.", effect: "+50 RNA & +20 ATP Deposu" },
-    ribosome: { id: "ribosome", name: "Ribozom", count: 0, baseCost: 15, costRes: "rna", costAtp: 0, costMult: 1.16, desc: "Amino asitleri RNA zincirlerine çeviren protein fabrikası.", effect: "+0.15 RNA/sn" },
-    mitochondria: { id: "mitochondria", name: "Mitokondri", count: 0, baseCost: 35, costRes: "rna", costAtp: 0, costMult: 1.18, desc: "Hücrenin enerji santrali. Kimyasal enerjiyi ATP'ye dönüştürür.", effect: "+0.25 ATP/sn" },
-    cytoplasm: { id: "cytoplasm", name: "Sitoplazma Rezervi", count: 0, baseCost: 75, costRes: "rna", costAtp: 10, costMult: 1.17, desc: "Hücre içi sıvı yoğunluğunu artırarak sentez hızını yükseltir.", effect: "+0.4 RNA/sn, +40 RNA Deposu" },
-    nucleus: { id: "nucleus", name: "Hücre Çekirdeği", count: 0, baseCost: 140, costRes: "rna", costAtp: 20, costMult: 1.25, desc: "Genetik bilgiyi korur, DNA sentezler ve çekirdek kapasitesini artırır.", effect: "+0.08 DNA/sn, +15 DNA Deposu" },
-    chromosome: { id: "chromosome", name: "Kromozom Sarmalı", count: 0, baseCost: 220, costRes: "rna", costAtp: 25, costMult: 1.22, desc: "DNA zincirlerini paketleyerek depolama sınırını devasa büyütür.", effect: "+30 DNA Deposu" },
-    flagellum: { id: "flagellum", name: "Kamçı (Flagellum)", count: 0, baseCost: 380, costRes: "rna", costAtp: 35, costMult: 1.26, desc: "Aktif hareket ederek besin toplar. Çalışırken hafif ATP yakar.", effect: "+1.2 RNA/sn (Tüketim: 0.1 ATP/sn)" }
+    membrane: { id: "membrane", name: "Hücre Zarı", count: 0, baseCost: 15, costMult: 1.18, costRes: "rna", desc: "Zar yüzeyini genişleterek RNA ve besin depolama sınırını artırır.", effect: "+150 RNA & +50 ATP Deposu" },
+    ribosome: { id: "ribosome", name: "Ribozom", count: 0, baseCost: 20, costMult: 1.15, costRes: "rna", desc: "Amino asitleri RNA zincirlerine çeviren protein fabrikası.", effect: "+0.5 RNA/sn" },
+    cytoplasm: { id: "cytoplasm", name: "Sitoplazma Rezervi", count: 0, baseCost: 75, costMult: 1.16, costRes: "rna", desc: "Hücre içi sıvı yoğunluğunu artırarak sentez hızını yükseltir.", effect: "+1.2 RNA/sn, +100 RNA Deposu" },
+    mitochondria: { id: "mitochondria", name: "Mitokondri", count: 0, baseCost: 150, costMult: 1.20, costRes: "rna", desc: "Hücrenin enerji santrali. Kimyasal enerjiyi ATP'ye dönüştürür.", effect: "+1.0 ATP/sn" },
+    nucleus: { id: "nucleus", name: "Hücre Çekirdeği", count: 0, baseCost: 300, costMult: 1.25, costRes: "rna", desc: "Genetik bilgiyi korur, DNA sentezler ve çekirdek kapasitesini artırır.", effect: "+0.2 DNA/sn, +25 DNA Deposu" },
+    chromosome: { id: "chromosome", name: "Kromozom Sarmalı", count: 0, baseCost: 450, costMult: 1.22, costRes: "rna", desc: "DNA zincirlerini süper sarmal haline getirip paketleyerek DNA kapasitesini devasa oranda büyütür.", effect: "+50 DNA Deposu" },
+    flagellum: { id: "flagellum", name: "Kamçı (Flagellum)", count: 0, baseCost: 650, costMult: 1.25, costRes: "rna", desc: "Hücrenin hareket etmesini sağlayarak zengin besin havuzlarına ulaşır.", effect: "+3.5 RNA/sn" }
   },
-
-  // ERA 1 Research
-  cellularResearch: {
-    permeability: { id: "permeability", name: "Zar Geçirgenliği", costRna: 25, costDna: 0, costAtp: 0, bought: false, desc: "Çorbadaki serbest molekülleri daha hızlı yakalar.", effect: "Dokunma gücü +1" },
-    glycolysis: { id: "glycolysis", name: "Glikoliz Enzimleri", costRna: 60, costDna: 0, costAtp: 0, bought: false, desc: "Şeker moleküllerini parçalayarak ilkel ATP üretimi sağlar.", effect: "Pasif +0.2 ATP/sn" },
-    histone: { id: "histone", name: "Histon Protein Paketleme", costRna: 130, costDna: 15, costAtp: 15, bought: false, desc: "DNA'yı histon makaralarına sararak çekirdeğe sığdırır.", effect: "+30 DNA Kapasitesi" },
-    eukaryote: { id: "eukaryote", name: "Ökaryotik Dönüşüm", costRna: 220, costDna: 25, costAtp: 25, bought: false, desc: "Zarla çevrili organeller ve gerçek çekirdek. DNA çağını başlatır.", effect: "Tüm üretimler %30 artar" },
-    phagocytosis: { id: "phagocytosis", name: "Fagositoz (Yutma)", costRna: 350, costDna: 40, costAtp: 30, bought: false, desc: "Büyük besin kütlelerini içine alarak hızlı gelişme sağlar.", effect: "Dokunma gücü +2" },
-    multicellularity: { id: "multicellularity", name: "Çok Hücrelilik (2. Çağa Geçiş)", costRna: 600, costDna: 65, costAtp: 40, bought: false, desc: "Hücreler birleşip kolonileşir. Eski hücre çağı biter, 2. Çağ başlar!", effect: "Çok Hücreli Yaşama Geçiş Yapar!" }
-  },
-
-  // ERA 2 Organs (NO ATP)
-  organs: {
-    tissue: { id: "tissue", name: "Doku Tabakası", count: 0, baseCost: 25, costRes: "biomass", costFood: 0, costMult: 1.18, desc: "Organize hücre grupları. Canlının gövdesini ve kütlesini büyütür.", effect: "+0.3 Biyokütle/sn, +60 Biyokütle Deposu" },
-    digestive: { id: "digestive", name: "Sindirim Kanalı", count: 0, baseCost: 55, costRes: "biomass", costFood: 5, costMult: 1.20, desc: "Alınan besinleri parçalayarak enerji ve kalori üretir.", effect: "+0.5 Besin/sn, +30 Besin Deposu" },
-    sensory: { id: "sensory", name: "Duyu Reseptörleri (Göz/Anten)", count: 0, baseCost: 90, costRes: "biomass", costFood: 10, costMult: 1.22, desc: "Çevreyi algılayarak besin bulmayı kolaylaştırır.", effect: "Dokunma gücü +1" },
-    muscles: { id: "muscles", name: "Kas Lifleri / Yüzgeçler", count: 0, baseCost: 160, costRes: "biomass", costFood: 15, costMult: 1.24, desc: "Hızlı hareket ve aktif avlanma gücü sağlar.", effect: "+1.0 Biyokütle/sn (Tüketim: 0.15 Besin/sn)" },
-    ganglion: { id: "ganglion", name: "Sinir Düğümü (İlkel Beyin)", count: 0, baseCost: 280, costRes: "biomass", costFood: 25, costMult: 1.28, desc: "Bilinç kıvılcımları üretir. Karaya çıkış ve kabile çağının şartıdır.", effect: "+0.15 Zeka /sn, +30 Zeka Kapasitesi" }
-  },
-
-  // ERA 2 Research
-  multiResearch: {
-    skeleton: { id: "skeleton", name: "İskeletleşme (Kabuk / Kemik)", costBio: 80, costSen: 15, bought: false, desc: "Gövdeye sert yapı kazandırarak ezilmelere karşı korur.", effect: "Biyokütle kapasitesi +150" },
-    circulation: { id: "circulation", name: "Dolaşım Sistemi (İlkel Kalp)", costBio: 160, costSen: 30, bought: false, desc: "Vücut sıvısını pompalayarak tüm organların verimini artırır.", effect: "Tüm organ üretimleri %30 artar" },
-    respiration: { id: "respiration", name: "Solunum Sistemi (Akciğer / Trake)", costBio: 280, costSen: 50, bought: false, desc: "Havadaki oksijeni soluyarak karaya çıkış hazırlığı yapar.", effect: "Besin tüketimi %25 azalır" },
-    social: { id: "social", name: "Sürü / Koloni İletişimi", costBio: 450, costSen: 80, bought: false, desc: "Bireyler arası ilkel haberleşme ve iş bölümü.", effect: "+0.3 Zeka/sn" },
-    landfall: { id: "landfall", name: "Karaya Çıkış (3. Çağ: Kabile)", costBio: 750, costSen: 120, bought: false, desc: "Sudan karaya ilk adımı atar, alet kullanmaya ve kabile kurmaya başlar!", effect: "3. Çağ: Kabile & Yerleşim Yönetimi Başlar!" }
-  },
-
-  // ERA 3 Tribal Buildings
-  tribalBuildings: {
-    shelter: { id: "shelter", name: "İlkel Barınak / Kovan", count: 0, baseCost: 25, costRes: "wood", costStone: 0, costMult: 1.22, desc: "Kabilenin barınma ihtiyacını karşılayarak nüfus kapasitesini artırır.", effect: "+2 Nüfus Kapasitesi" },
-    firepit: { id: "firepit", name: "Ortak Ateş Çukuru", count: 0, baseCost: 40, costRes: "wood", costStone: 15, costMult: 1.25, desc: "Isınma ve avlanan etleri pişirme. Tüm işçilerin verimini artırır.", effect: "Kabile üretimi +%20" },
-    granary: { id: "granary", name: "Kabile Ambarı", count: 0, baseCost: 60, costRes: "wood", costStone: 30, costMult: 1.20, desc: "Odun, taş ve besin depolama sınırlarını genişletir.", effect: "+100 Odun, Taş ve Besin Deposu" },
-    toolmaker: { id: "toolmaker", name: "Alet Atölyesi", count: 0, baseCost: 90, costRes: "wood", costStone: 50, costMult: 1.25, desc: "Çakmaktaşı baltalar ve mızraklar. Oduncu ve taşçı verimini ikiye katlar.", effect: "Oduncu ve Taşçı üretimi +%50" }
-  },
-
-  // ERA 3 Tribal Research
-  tribalResearch: {
-    language: { id: "language", name: "Gelişmiş Dil & Sözlü Kültür", costKnow: 30, costWood: 0, bought: false, desc: "Deneyimleri sonraki nesillere aktararak bilgi üretimini hızlandırır.", effect: "Şaman bilgi üretimi +%50" },
-    pottery: { id: "pottery", name: "Çömlekçilik & Saklama", costKnow: 50, costWood: 40, bought: false, desc: "Kilden kaplar yaparak bozulmayı önler ve depolamayı artırır.", effect: "Tüm depo sınırları +150" },
-    agriculture: { id: "agriculture", name: "Tarım Devrimi & Ehlileştirme", costKnow: 90, costWood: 80, bought: false, desc: "Toprağı düzenli ekerek çiftçi verimini devasa artırır.", effect: "Çiftçi besin üretimi 2 katına çıkar" },
-    metallurgy: { id: "metallurgy", name: "Metalurji & Bakır İşleme", costKnow: 150, costWood: 120, bought: false, desc: "Taş aletleri geride bırakıp ilk metali eritir. 4. Çağ'a (Medeniyet) geçiş kapısı!", effect: "4. Çağ: Bronz & Medeniyet Kapısını Açar!" }
-  },
-
-  // Species List
-  speciesList: [
-    { id: "plant", name: "🌿 Bitkiler (Plantoid)", icon: "🌿", trait: "Fotosentez & Kök Salma", desc: "Besin tüketimi sıfırdır. Türe özel işçi 'Kök Salıcı' topraktan taş ve odun çeker." },
-    { id: "fungi", name: "🍄 Mantarlar (Fungoid)", icon: "🍄", trait: "Miselyum & Ayrıştırıcı", desc: "Depolama sınırları 2 kat fazladır. Türe özel işçi 'Sporcu' organik atıkları bolca besine çevirir." },
-    { id: "mammal", name: "🐾 Memeliler (Mammal)", icon: "🐾", trait: "Zeka & Uyum", desc: "Bilgi/Zeka üretimi 2 kat hızlıdır. Türe özel işçi 'İz Sürücü Avcı' büyük avlarla yüksek besin getirir." },
-    { id: "reptile", name: "🦎 Sürüngenler (Reptile)", icon: "🦎", trait: "Pullar & Düşük Tüketim", desc: "Kabile üyeleri %60 daha az besin tüketir. Türe özel işçi 'Güneş Nöbetçisi' sıfır besin masrafıyla taş kazar." },
-    { id: "insect", name: "🐜 Böcekler (Insectoid)", icon: "🐜", trait: "Kovan Bilinci & Sürü", desc: "Nüfus üreme hızı devasadır. Türe özel işçi 'İşçi Karınca' tüm çalışanların verimini artırır." },
-    { id: "bird", name: "🦅 Kuşlar (Avian)", icon: "🦅", trait: "Hava Hakimiyeti & Gözetleme", desc: "Hızlı hareket. Türe özel işçi 'Gök Gözcüsü' havadan geniş ormanları tarayarak odun getirir." }
-  ]
+  research: {
+    permeability: { id: "permeability", name: "Zar Geçirgenliği", costDna: 0, costRna: 35, bought: false, desc: "Çorbadaki serbest molekülleri daha hızlı yakalar.", effect: "Dokunma gücü +1" },
+    glycolysis: { id: "glycolysis", name: "Glikoliz Enzimleri", costDna: 0, costRna: 100, bought: false, desc: "Şeker moleküllerini parçalayarak ilkel ATP üretimi sağlar.", effect: "Pasif +0.3 ATP/sn" },
+    histone: { id: "histone", name: "Histon Protein Paketleme", costDna: 20, costRna: 200, bought: false, desc: "DNA'yı histon makaralarına sararak çekirdeğe sığdırır.", effect: "+50 DNA Kapasitesi" },
+    eukaryote: { id: "eukaryote", name: "Ökaryotik Dönüşüm", costDna: 35, costRna: 350, bought: false, desc: "Zarla çevrili organeller ve gelişmiş çekirdek. DNA çağını başlatır.", effect: "Tüm üretimler %50 artar" },
+    phagocytosis: { id: "phagocytosis", name: "Fagositoz (Yutma)", costDna: 50, costRna: 600, bought: false, desc: "Büyük besin kütlelerini içine alarak hızlı gelişme sağlar.", effect: "Dokunma gücü +5" },
+    multicellularity: { id: "multicellularity", name: "Çok Hücrelilik (Gelecek Çağ)", costDna: 100, costRna: 1500, bought: false, desc: "Hücreler kolonileşir ve iş bölümü yapar. Bir sonraki çağa geçiş!", effect: "Kara Yaşamı Çağının Kilidi Açılır!" }
+  }
 };
 
 // --- NUMBER FORMATTER ---
@@ -778,177 +620,31 @@ function addLog(msg, isSpecial) {
   const item = document.createElement("div");
   item.className = "log-item" + (isSpecial ? " special" : "");
   item.innerText = msg;
-  if (list.insertBefore) list.insertBefore(item, list.firstChild);
-  else list.appendChild(item);
-}
-
-// --- DYNAMIC CAPS ---
-function updateCaps() {
-  if (game.era === "cellular") {
-    let rna = 100 + (game.organelles.membrane.count * 50) + (game.organelles.cytoplasm.count * 40);
-    let atp = 60 + (game.organelles.membrane.count * 20);
-    let dna = 40 + (game.organelles.nucleus.count * 15) + (game.organelles.chromosome.count * 30);
-    if (game.cellularResearch.histone && game.cellularResearch.histone.bought) dna += 30;
-
-    game.cellular.rnaCap = rna;
-    game.cellular.atpCap = atp;
-    game.cellular.dnaCap = dna;
-  } else if (game.era === "multicellular") {
-    let bio = 300 + (game.organs.tissue.count * 60);
-    if (game.multiResearch.skeleton && game.multiResearch.skeleton.bought) bio += 150;
-    if (game.selectedSpecies === "fungi") bio *= 2;
-
-    let sen = 150 + (game.organs.ganglion.count * 30);
-    let food = 100 + (game.organs.digestive.count * 30);
-
-    game.multi.biomassCap = bio;
-    game.multi.sentienceCap = sen;
-    game.multi.foodCap = food;
+  if (list.insertBefore) {
+    list.insertBefore(item, list.firstChild);
+  } else if (list.prepend) {
+    list.prepend(item);
   } else {
-    // Tribal Era Caps
-    let popCap = 5 + (game.tribalBuildings.shelter.count * 2);
-    let bonusCap = (game.tribalBuildings.granary.count * 100);
-    if (game.tribalResearch.pottery && game.tribalResearch.pottery.bought) bonusCap += 150;
-    if (game.selectedSpecies === "fungi") bonusCap *= 1.5;
-
-    game.tribal.popCap = popCap;
-    game.tribal.foodCap = 150 + bonusCap;
-    game.tribal.woodCap = 120 + bonusCap;
-    game.tribal.stoneCap = 100 + bonusCap;
-    game.tribal.knowledgeCap = 80 + Math.floor(bonusCap * 0.5);
+    list.appendChild(item);
   }
-}
-
-// --- METABOLIC SURGE (ERA 1 ONLY) ---
-function activateSurge() {
-  if (game.era !== "cellular") return;
-  if (game.cellular.atp >= 25 && game.surgeSecondsLeft <= 0) {
-    game.cellular.atp -= 25;
-    game.surgeSecondsLeft = 15;
-    showToast("⚡ Metabolik Aşırı Hız! (2x Üretim)");
-    addLog("Enerji Patlaması: ATP yakılarak metabolik hız 2 katına çıkarıldı!", true);
-    renderUI();
-  } else if (game.surgeSecondsLeft > 0) {
-    showToast("Aşırı hız devrede!");
-  } else {
-    showToast("Yetersiz ATP! (25 ATP Gerekir)");
-  }
-}
-
-function getMultiplier() {
-  return (game.era === "cellular" && game.surgeSecondsLeft > 0) ? 2 : 1;
-}
-
-// --- PRODUCTION RATES ---
-function getCellularRnaRate() {
-  let r = (game.organelles.ribosome.count * 0.15) +
-          (game.organelles.cytoplasm.count * 0.4) +
-          (game.organelles.flagellum.count * 1.2);
-  if (game.cellularResearch.eukaryote.bought) r *= 1.3;
-  return r * getMultiplier();
-}
-
-function getCellularDnaRate() {
-  let r = (game.organelles.nucleus.count * 0.08);
-  if (game.cellularResearch.eukaryote.bought) r *= 1.3;
-  return r * getMultiplier();
-}
-
-function getCellularAtpRate() {
-  let gen = (game.organelles.mitochondria.count * 0.25);
-  if (game.cellularResearch.glycolysis.bought) gen += 0.2;
-  let con = (game.organelles.flagellum.count * 0.1);
-  return (gen - con) * getMultiplier();
-}
-
-function getMultiBiomassRate() {
-  let rate = (game.organs.tissue.count * 0.3) + (game.organs.muscles.count * 1.0);
-  if (game.multiResearch.circulation && game.multiResearch.circulation.bought) rate *= 1.3;
-  if (game.selectedSpecies === "plant") rate *= 1.6;
-  if (game.selectedSpecies === "bird") rate += (game.organs.muscles.count * 0.75);
-  return rate;
-}
-
-function getMultiSentienceRate() {
-  let rate = (game.organs.ganglion.count * 0.15);
-  if (game.multiResearch.social && game.multiResearch.social.bought) rate += 0.3;
-  if (game.selectedSpecies === "mammal") rate *= 2.0;
-  return rate;
-}
-
-function getMultiFoodRate() {
-  let gen = (game.organs.digestive.count * 0.5);
-  if (game.selectedSpecies === "plant") gen += 1.0;
-  let con = (game.organs.muscles.count * 0.15);
-  if (game.multiResearch.respiration && game.multiResearch.respiration.bought) con *= 0.75;
-  if (game.selectedSpecies === "reptile") con *= 0.4;
-  if (game.selectedSpecies === "plant") con = 0;
-  return gen - con;
-}
-
-// ERA 3 TRIBAL RATES
-function getTribalFirepitBonus() {
-  return 1 + (game.tribalBuildings.firepit.count * 0.2);
-}
-
-function getTribalToolBonus() {
-  return 1 + (game.tribalBuildings.toolmaker.count * 0.5);
-}
-
-function getTribalFoodRate() {
-  let farmerMult = 0.6;
-  if (game.tribalResearch.agriculture && game.tribalResearch.agriculture.bought) farmerMult *= 2;
-  let gen = (game.jobs.farmer.count * farmerMult) * getTribalFirepitBonus();
-
-  if (game.selectedSpecies === "mammal") gen += (game.jobs.specialist.count * 1.0); // Hunter
-  if (game.selectedSpecies === "fungi") gen += (game.jobs.specialist.count * 0.8); // Decomposer
-
-  // Consumption: Each population member eats 0.2 food/s (Reptiles eat 0.08, Plants eat 0)
-  let conPerPop = 0.2;
-  if (game.selectedSpecies === "reptile") conPerPop = 0.08;
-  if (game.selectedSpecies === "plant") conPerPop = 0;
-  let con = game.tribal.pop * conPerPop;
-
-  return gen - con;
-}
-
-function getTribalWoodRate() {
-  let gen = (game.jobs.lumberjack.count * 0.3) * getTribalToolBonus() * getTribalFirepitBonus();
-  if (game.selectedSpecies === "plant") gen += (game.jobs.specialist.count * 0.3); // Root gatherer
-  if (game.selectedSpecies === "bird") gen += (game.jobs.specialist.count * 0.45); // Aerial gatherer
-  return gen;
-}
-
-function getTribalStoneRate() {
-  let gen = (game.jobs.miner.count * 0.2) * getTribalToolBonus() * getTribalFirepitBonus();
-  if (game.selectedSpecies === "plant") gen += (game.jobs.specialist.count * 0.2);
-  if (game.selectedSpecies === "reptile") gen += (game.jobs.specialist.count * 0.35); // Sun miner
-  return gen;
-}
-
-function getTribalKnowledgeRate() {
-  let shamanMult = 0.15;
-  if (game.tribalResearch.language && game.tribalResearch.language.bought) shamanMult *= 1.5;
-  let gen = (game.jobs.shaman.count * shamanMult) * getTribalFirepitBonus();
-  if (game.selectedSpecies === "mammal") gen *= 1.5;
-  return gen;
 }
 
 // --- COST FORMULAS ---
-function calculateCost(item, qty) {
+function calculateCost(org, qty) {
   let sum = 0;
   for (let i = 0; i < qty; i++) {
-    sum += Math.floor(item.baseCost * Math.pow(item.costMult, item.count + i));
+    sum += Math.floor(org.baseCost * Math.pow(org.costMult, org.count + i));
   }
   return sum;
 }
 
-function calculateMax(item, curRes) {
+function calculateMax(org) {
   let count = 0;
+  let res = game.res[org.costRes];
   let sum = 0;
   while (true) {
-    let next = Math.floor(item.baseCost * Math.pow(item.costMult, item.count + count));
-    if (sum + next <= curRes) {
+    let next = Math.floor(org.baseCost * Math.pow(org.costMult, org.count + count));
+    if (sum + next <= res) {
       sum += next;
       count++;
       if (count > 250) break;
@@ -956,7 +652,7 @@ function calculateMax(item, curRes) {
       break;
     }
   }
-  return { count: Math.max(1, count), cost: sum === 0 ? calculateCost(item, 1) : sum };
+  return { count: Math.max(1, count), cost: sum === 0 ? calculateCost(org, 1) : sum };
 }
 
 // --- TAB SWITCHER ---
@@ -972,6 +668,7 @@ function switchTab(tabId) {
   if (targetBtn) targetBtn.classList.add("active");
 }
 
+// --- MULTIPLIER SELECTOR ---
 function setMultiplier(m) {
   game.buyMult = m;
   document.querySelectorAll(".mult-btn").forEach(b => b.classList.remove("active"));
@@ -980,37 +677,16 @@ function setMultiplier(m) {
   renderUI();
 }
 
-// --- PRIMARY CLICK ACTION ---
-function handlePrimaryClick(e) {
-  let gain = 1;
-  let text = "";
-
-  if (game.era === "cellular") {
-    gain = game.cellular.clickPower * getMultiplier();
-    if (game.cellular.rna < game.cellular.rnaCap) {
-      game.cellular.rna = Math.min(game.cellular.rnaCap, game.cellular.rna + gain);
-    }
-    text = "+" + gain + " RNA";
-  } else if (game.era === "multicellular") {
-    gain = game.multi.clickPower;
-    if (game.selectedSpecies === "insect") gain *= 3;
-    if (game.multi.biomass < game.multi.biomassCap) {
-      game.multi.biomass = Math.min(game.multi.biomassCap, game.multi.biomass + gain);
-    }
-    text = "+" + gain + " Biyokütle";
-  } else {
-    // Tribal Era: Click gives Food
-    gain = game.tribal.clickPower;
-    if (game.tribal.food < game.tribal.foodCap) {
-      game.tribal.food = Math.min(game.tribal.foodCap, game.tribal.food + gain);
-    }
-    text = "+" + gain + " Besin Toplandı";
+// --- MAIN SYNTHESIS CLICK ---
+function handleSynthClick(e) {
+  if (game.res.rna < game.res.rnaCap) {
+    game.res.rna = Math.min(game.res.rnaCap, game.res.rna + game.clickPower);
   }
 
-  // Floating indicator
+  // Floating text
   const floatEl = document.createElement("div");
   floatEl.className = "click-feedback";
-  floatEl.innerText = text;
+  floatEl.innerText = "+" + game.clickPower + " RNA";
 
   const btn = document.getElementById("main-synth-btn");
   const rect = btn.getBoundingClientRect();
@@ -1018,543 +694,81 @@ function handlePrimaryClick(e) {
   floatEl.style.top = (e && e.clientY ? e.clientY : rect.top + 10) + "px";
   document.body.appendChild(floatEl);
   setTimeout(() => {
-    if (floatEl && floatEl.parentNode) floatEl.parentNode.removeChild(floatEl);
+    if (floatEl && floatEl.parentNode) {
+      floatEl.parentNode.removeChild(floatEl);
+    }
   }, 600);
 
   renderUI();
 }
 
-// --- WORKER JOBS (ERA 3) ---
-function getAssignedWorkersCount() {
-  let sum = 0;
-  for (let k in game.jobs) sum += game.jobs[k].count;
-  return sum;
-}
 
-function getUnassignedWorkers() {
-  return Math.max(0, game.tribal.pop - getAssignedWorkersCount());
-}
-
-function assignWorker(jobId, delta) {
-  if (game.era !== "tribal") return;
-  const job = game.jobs[jobId];
-  if (!job) return;
-
-  if (delta > 0) {
-    if (getUnassignedWorkers() > 0) {
-      job.count += 1;
-    } else {
-      showToast("Boşta kabile üyesi yok! Önce barınak yap.");
-    }
-  } else if (delta < 0) {
-    if (job.count > 0) {
-      job.count -= 1;
-    }
+// --- DYNAMIC CAPACITY RECALCULATION ---
+function updateCaps() {
+  let rna = 250 + (game.organelles.membrane.count * 150) + (game.organelles.cytoplasm.count * 100);
+  let atp = 100 + (game.organelles.membrane.count * 50);
+  let dna = 50 + (game.organelles.nucleus.count * 25) + (game.organelles.chromosome.count * 50);
+  
+  if (game.research.histone && game.research.histone.bought) {
+    dna += 50;
   }
-  renderUI();
+  
+  game.res.rnaCap = rna;
+  game.res.atpCap = atp;
+  game.res.dnaCap = dna;
 }
 
-// --- BUY STRUCTURE ACTION ---
-function handleBuyStructure(id) {
-  if (game.era === "cellular") {
-    const org = game.organelles[id];
-    if (!org) return;
+// --- BUY ORGANELLE ACTION ---
+function handleBuyOrganelle(id) {
+  const org = game.organelles[id];
+  if (!org) return;
 
-    let qty = game.buyMult === "max" ? calculateMax(org, game.cellular.rna).count : game.buyMult;
-    let cost = game.buyMult === "max" ? calculateMax(org, game.cellular.rna).cost : calculateCost(org, qty);
-    let atpCost = (org.costAtp || 0) * qty;
+  let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
+  let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
 
-    if (game.cellular.rna >= cost && game.cellular.atp >= atpCost) {
-      game.cellular.rna -= cost;
-      game.cellular.atp -= atpCost;
-      org.count += qty;
+  if (game.res[org.costRes] >= cost) {
+    game.res[org.costRes] -= cost;
+    org.count += qty;
 
-      updateCaps();
-      addLog(qty + "x " + org.name + " üretildi.");
-      showToast("+" + qty + " " + org.name);
-      renderUI();
-    } else if (game.cellular.atp < atpCost) {
-      showToast("Yetersiz ATP Enerjisi!");
-    }
-  } else if (game.era === "multicellular") {
-    const organ = game.organs[id];
-    if (!organ) return;
+    updateCaps();
 
-    let qty = game.buyMult === "max" ? calculateMax(organ, game.multi.biomass).count : game.buyMult;
-    let cost = game.buyMult === "max" ? calculateMax(organ, game.multi.biomass).cost : calculateCost(organ, qty);
-    let foodCost = (organ.costFood || 0) * qty;
-
-    if (game.multi.biomass >= cost && game.multi.food >= foodCost) {
-      game.multi.biomass -= cost;
-      game.multi.food -= foodCost;
-      organ.count += qty;
-
-      if (id === "sensory") game.multi.clickPower += (1 * qty);
-
-      updateCaps();
-      addLog(qty + "x " + organ.name + " geliştirildi.");
-      showToast("+" + qty + " " + organ.name);
-      renderUI();
-    } else if (game.multi.food < foodCost) {
-      showToast("Yetersiz Besin!");
-    }
-  } else {
-    // Tribal Era Buildings (Uses Wood & Stone)
-    const bld = game.tribalBuildings[id];
-    if (!bld) return;
-
-    let qty = game.buyMult === "max" ? calculateMax(bld, game.tribal.wood).count : game.buyMult;
-    let cost = game.buyMult === "max" ? calculateMax(bld, game.tribal.wood).cost : calculateCost(bld, qty);
-    let stoneCost = (bld.costStone || 0) * qty;
-
-    if (game.tribal.wood >= cost && game.tribal.stone >= stoneCost) {
-      game.tribal.wood -= cost;
-      game.tribal.stone -= stoneCost;
-      bld.count += qty;
-
-      updateCaps();
-      addLog(qty + "x " + bld.name + " inşa edildi.");
-      showToast("+" + qty + " " + bld.name);
-      renderUI();
-    } else if (game.tribal.stone < stoneCost) {
-      showToast("Yetersiz Taş!");
-    }
+    addLog(qty + "x " + org.name + " üretildi.");
+    showToast("+" + qty + " " + org.name);
+    renderUI();
   }
 }
 
 // --- BUY RESEARCH ACTION ---
 function handleBuyResearch(id) {
-  if (game.era === "cellular") {
-    const tech = game.cellularResearch[id];
-    if (!tech || tech.bought) return;
+  const tech = game.research[id];
+  if (!tech || tech.bought) return;
 
-    if (game.cellular.rna >= tech.costRna && game.cellular.dna >= tech.costDna && game.cellular.atp >= tech.costAtp) {
-      game.cellular.rna -= tech.costRna;
-      game.cellular.dna -= tech.costDna;
-      game.cellular.atp -= tech.costAtp;
-      tech.bought = true;
+  if (game.res.rna >= tech.costRna && game.res.dna >= tech.costDna) {
+    game.res.rna -= tech.costRna;
+    game.res.dna -= tech.costDna;
+    tech.bought = true;
 
-      if (id === "permeability") game.cellular.clickPower += 1;
-      if (id === "phagocytosis") game.cellular.clickPower += 2;
-      if (id === "histone") updateCaps();
-
-      if (id === "multicellularity") {
-        transitionToMulticellular();
-        return;
-      }
-
-      showToast(tech.name + " açıldı!");
-      addLog("Evrim: " + tech.name + " mutasyonu kazanıldı.", true);
-      renderUI();
+    if (id === "permeability") game.clickPower += 1;
+    if (id === "phagocytosis") game.clickPower += 5;
+    if (id === "histone") updateCaps();
+    if (id === "multicellularity") {
+      showToast("Tebrikler! Çok Hücreli Çağa ulaştınız!");
+      addLog("DEVRİM: Çok Hücreli Çağ başladı! Yakında 2. Çağ gelecek.", true);
     }
-  } else if (game.era === "multicellular") {
-    const tech = game.multiResearch[id];
-    if (!tech || tech.bought) return;
 
-    if (game.multi.biomass >= tech.costBio && game.multi.sentience >= tech.costSen) {
-      game.multi.biomass -= tech.costBio;
-      game.multi.sentience -= tech.costSen;
-      tech.bought = true;
-
-      if (id === "skeleton") updateCaps();
-      
-      // TRANSITION TO TRIBAL ERA!
-      if (id === "landfall") {
-        transitionToTribal();
-        return;
-      }
-
-      showToast(tech.name + " tamamlandı!");
-      addLog("Gelişim: " + tech.name + " sistemi evrildi.", true);
-      renderUI();
-    }
-  } else {
-    // Tribal Research (Uses Knowledge and Wood)
-    const tech = game.tribalResearch[id];
-    if (!tech || tech.bought) return;
-
-    if (game.tribal.knowledge >= tech.costKnow && game.tribal.wood >= tech.costWood) {
-      game.tribal.knowledge -= tech.costKnow;
-      game.tribal.wood -= tech.costWood;
-      tech.bought = true;
-
-      if (id === "pottery") updateCaps();
-      if (id === "metallurgy") {
-        showToast("🎉 DEVRİM: Medeniyet ve Bronz Çağı Açıldı!");
-        addLog("DEVRİM: Bakır eritildi, ilk metaller şekillendi! 4. Çağ kapıda.", true);
-      } else {
-        showToast(tech.name + " keşfedildi!");
-        addLog("Kabile İlerleyişi: " + tech.name + " keşfi tamamlandı.", true);
-      }
-      renderUI();
-    }
+    showToast(tech.name + " açıldı!");
+    addLog("Evrim: " + tech.name + " tamamlandı.", true);
+    renderUI();
   }
 }
 
-// --- ERA TRANSITIONS ---
-function transitionToMulticellular() {
-  game.era = "multicellular";
-  game.surgeSecondsLeft = 0;
-  showToast("🎉 DEVRİM: 2. Çağ (Çok Hücreli Yaşam) Başladı!");
-  addLog("BİYOLOJİK SIÇRAMA: Hücre çağı geride kaldı. Koloniler birleşti, ilk organlar oluşuyor!", true);
-
-  updateCaps();
-  setupEraInterface();
-  renderUI();
-}
-
-function transitionToTribal() {
-  game.era = "tribal";
-  showToast("🔥 DEVRİM: 3. Çağ (Kabile & Yerleşim) Başladı!");
-  addLog("TARİHİ ADIM: Canlınız karaya ayak bastı! İlk ilkel kabile kuruldu, işçi ataması başladı.", true);
-
-  updateCaps();
-  setupEraInterface();
-  renderUI();
-}
-
-function selectSpecies(specId) {
-  game.selectedSpecies = specId;
-  const spec = game.speciesList.find(s => s.id === specId);
-  updateCaps();
-  showToast(spec.name + " seçildi!");
-  addLog("FAMİLYA SEÇİLDİ: " + spec.name + " - Özellik: " + spec.trait, true);
-  document.getElementById("era-badge").innerText = spec.name;
-  buildSpeciesCards();
-  renderUI();
-}
-
-// --- SETUP CLEAN ERA INTERFACE ---
-function setupEraInterface() {
-  const resGrid = document.getElementById("res-grid");
-  const synthBtn = document.getElementById("main-synth-btn");
-  const synthIcon = document.getElementById("synth-icon");
-  const synthTitle = document.getElementById("synth-title");
-  const navIconPrimary = document.getElementById("nav-icon-primary");
-  const navLabelPrimary = document.getElementById("nav-label-primary");
-  const structTitle = document.getElementById("structures-title");
-  const researchTitle = document.getElementById("research-title");
-  const eraBadge = document.getElementById("era-badge");
-  const surgeCard = document.getElementById("surge-card");
-  const workersPanel = document.getElementById("workers-panel");
-  const speciesSection = document.getElementById("species-section");
-
-  if (game.era === "cellular") {
-    resGrid.className = "resources-grid";
-    eraBadge.innerText = "🌱 1. Çağ: Hücre";
-    eraBadge.style.color = "var(--accent-primary)";
-    eraBadge.style.borderColor = "rgba(16, 185, 129, 0.3)";
-
-    resGrid.innerHTML = `
-      <div class="res-pill" style="color:var(--accent-primary);">
-        <div class="res-label"><span>RNA</span><span id="label-rna-cap">/ 100</span></div>
-        <div class="res-val" id="val-rna">0</div>
-        <div class="res-rate" id="rate-rna">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:var(--accent-secondary);">
-        <div class="res-label"><span>DNA</span><span id="label-dna-cap">/ 40</span></div>
-        <div class="res-val" id="val-dna">0</div>
-        <div class="res-rate" id="rate-dna">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:var(--accent-energy);">
-        <div class="res-label"><span>ATP Enerji</span><span id="label-atp-cap">/ 60</span></div>
-        <div class="res-val" id="val-atp">10</div>
-        <div class="res-rate" id="rate-atp">+0.0/sn</div>
-      </div>
-    `;
-
-    synthBtn.className = "synth-btn";
-    synthIcon.innerText = "🧬";
-    synthTitle.innerText = "Primordiyal Çorbayı Sentezle";
-    navIconPrimary.innerText = "🧬";
-    navLabelPrimary.innerText = "Hücre";
-    structTitle.innerText = "Hücresel Organeller";
-    researchTitle.innerText = "Genetik Adaptasyon & Evrim";
-
-    surgeCard.style.display = "flex";
-    workersPanel.style.display = "none";
-    speciesSection.style.display = "none";
-  } else if (game.era === "multicellular") {
-    resGrid.className = "resources-grid";
-    surgeCard.style.display = "none";
-    workersPanel.style.display = "none";
-
-    resGrid.innerHTML = `
-      <div class="res-pill" style="color:#ec4899;">
-        <div class="res-label"><span>Biyokütle</span><span id="label-bio-cap">/ 300</span></div>
-        <div class="res-val" id="val-bio">0</div>
-        <div class="res-rate" id="rate-bio">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:var(--accent-secondary);">
-        <div class="res-label"><span>Bilinç / Zeka</span><span id="label-sen-cap">/ 150</span></div>
-        <div class="res-val" id="val-sen">0</div>
-        <div class="res-rate" id="rate-sen">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:#f59e0b;">
-        <div class="res-label"><span>Besin</span><span id="label-food-cap">/ 100</span></div>
-        <div class="res-val" id="val-food">20</div>
-        <div class="res-rate" id="rate-food">+0.0/sn</div>
-      </div>
-    `;
-
-    eraBadge.innerText = game.selectedSpecies ? game.speciesList.find(s => s.id === game.selectedSpecies).name : "🦀 2. Çağ: Çok Hücreli";
-    eraBadge.style.color = "#ec4899";
-    eraBadge.style.borderColor = "rgba(236, 72, 153, 0.4)";
-
-    synthBtn.className = "synth-btn bio-theme";
-    synthIcon.innerText = "🥩";
-    synthTitle.innerText = "Hücre Bölünmesi ve Büyüme";
-    navIconPrimary.innerText = "🐾";
-    navLabelPrimary.innerText = "Beden";
-    structTitle.innerText = "Organlar & Vücut Sistemleri";
-    researchTitle.innerText = "Türleşme & Karaya Çıkış";
-
-    speciesSection.style.display = "flex";
-    buildSpeciesCards();
-  } else {
-    // 3. TRIBAL ERA: Clean Tribal Interface (NO ATP, NO SEA ORGANS)
-    resGrid.className = "resources-grid grid-4";
-    surgeCard.style.display = "none";
-    speciesSection.style.display = "none";
-    workersPanel.style.display = "flex";
-
-    resGrid.innerHTML = `
-      <div class="res-pill" style="color:#f59e0b;">
-        <div class="res-label"><span>Nüfus</span><span id="label-pop-cap">/ 5</span></div>
-        <div class="res-val" id="val-pop">2</div>
-        <div class="res-rate" id="rate-pop">Kabile</div>
-      </div>
-      <div class="res-pill" style="color:#22c55e;">
-        <div class="res-label"><span>Besin</span><span id="label-food-cap">/ 150</span></div>
-        <div class="res-val" id="val-food">30</div>
-        <div class="res-rate" id="rate-food">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:#d97706;">
-        <div class="res-label"><span>Odun</span><span id="label-wood-cap">/ 120</span></div>
-        <div class="res-val" id="val-wood">10</div>
-        <div class="res-rate" id="rate-wood">+0.0/sn</div>
-      </div>
-      <div class="res-pill" style="color:#94a3b8;">
-        <div class="res-label"><span>Taş</span><span id="label-stone-cap">/ 100</span></div>
-        <div class="res-val" id="val-stone">0</div>
-        <div class="res-rate" id="rate-stone">+0.0/sn</div>
-      </div>
-    `;
-
-    eraBadge.innerText = "🔥 3. Çağ: Kabile (" + (game.speciesList.find(s=>s.id===game.selectedSpecies)||{name:"Kabile"}).name.split(' ')[0] + ")";
-    eraBadge.style.color = "#f59e0b";
-    eraBadge.style.borderColor = "rgba(245, 158, 11, 0.4)";
-
-    synthBtn.className = "synth-btn tribal-theme";
-    synthIcon.innerText = "🏹";
-    synthTitle.innerText = "Avlan ve Çevreden Besin Topla";
-    navIconPrimary.innerText = "🏕️";
-    navLabelPrimary.innerText = "Kabile";
-    structTitle.innerText = "Kabile Binaları & Barınaklar";
-    researchTitle.innerText = "Kabile Keşifleri & Zanaat";
-
-    buildJobsPanel();
-  }
-
-  buildStructureCards();
-  buildResearchCards();
-}
-
-// --- BUILD JOBS PANEL (ERA 3) ---
-function buildJobsPanel() {
-  const container = document.getElementById("jobs-container");
-  if (!container) return;
-  container.innerHTML = "";
-
-  // Configure specialist job based on chosen species
-  const spec = game.speciesList.find(s => s.id === game.selectedSpecies) || game.speciesList[2];
-  if (spec.id === "plant") {
-    game.jobs.specialist.name = "Kök Salıcı";
-    game.jobs.specialist.icon = "🌱";
-    game.jobs.specialist.desc = "Toprağın derinliklerine kök salarak taş ve odun çeker.";
-    game.jobs.specialist.baseProd = "+0.2 Taş & +0.3 Odun/sn";
-  } else if (spec.id === "fungi") {
-    game.jobs.specialist.name = "Sporcu (Ayrıştırıcı)";
-    game.jobs.specialist.icon = "🍄";
-    game.jobs.specialist.desc = "Organik atıkları hızlıca sindirip kabileye bol besin sağlar.";
-    game.jobs.specialist.baseProd = "+0.8 Besin/sn";
-  } else if (spec.id === "mammal") {
-    game.jobs.specialist.name = "İz Sürücü Avcı";
-    game.jobs.specialist.icon = "🐾";
-    game.jobs.specialist.desc = "Yüksek zekayla organize avlanarak büyük avlar getirir.";
-    game.jobs.specialist.baseProd = "+1.0 Besin/sn";
-  } else if (spec.id === "reptile") {
-    game.jobs.specialist.name = "Güneş Nöbetçisi";
-    game.jobs.specialist.icon = "🦎";
-    game.jobs.specialist.desc = "Sıfır yiyecek masrafıyla kayaları kırıp taş çıkarır.";
-    game.jobs.specialist.baseProd = "+0.35 Taş/sn (0 Besin Masrafı)";
-  } else if (spec.id === "insect") {
-    game.jobs.specialist.name = "İşçi Karınca";
-    game.jobs.specialist.icon = "🐜";
-    game.jobs.specialist.desc = "Koloni zihnini yöneterek tüm diğer işçilerin hızını artırır.";
-    game.jobs.specialist.baseProd = "Tüm Kabile +%25 Hız";
-  } else if (spec.id === "bird") {
-    game.jobs.specialist.name = "Gök Gözcüsü";
-    game.jobs.specialist.icon = "🦅";
-    game.jobs.specialist.desc = "Havadan ormanları tarayarak zengin odun bölgeleri bulur.";
-    game.jobs.specialist.baseProd = "+0.45 Odun/sn";
-  }
-
-  for (let id in game.jobs) {
-    const job = game.jobs[id];
-    const card = document.createElement("div");
-    card.className = "job-card";
-    card.innerHTML = `
-      <div class="job-info">
-        <span class="job-title"><span>${job.icon}</span> <span>${job.name}</span></span>
-        <span class="job-rate">${job.baseProd}</span>
-        <span style="font-size:10px; color:#64748b;">${job.desc}</span>
-      </div>
-      <div class="job-controls">
-        <button class="job-btn" onclick="assignWorker('${id}', -1)">-</button>
-        <span class="job-count-badge" id="job-count-${id}">${job.count}</span>
-        <button class="job-btn" onclick="assignWorker('${id}', 1)">+</button>
-      </div>
-    `;
-    container.appendChild(card);
-  }
-}
-
-// --- CARD BUILDERS ---
-function buildStructureCards() {
-  const container = document.getElementById("structures-container");
-  container.innerHTML = "";
-
-  let collection;
-  if (game.era === "cellular") collection = game.organelles;
-  else if (game.era === "multicellular") collection = game.organs;
-  else collection = game.tribalBuildings;
-
-  for (let id in collection) {
-    const item = collection[id];
-    const card = document.createElement("div");
-    card.className = "item-card";
-    card.innerHTML = `
-      <div class="item-header">
-        <span class="item-title">${item.name}</span>
-        <span class="item-count" id="count-${id}">x${item.count}</span>
-      </div>
-      <p class="item-desc">${item.desc}</p>
-      <div class="item-effect">${item.effect}</div>
-      <div class="item-footer">
-        <span class="item-cost" id="cost-${id}">0</span>
-        <button class="action-btn" id="btn-buy-${id}" onclick="handleBuyStructure('${id}')">Geliştir</button>
-      </div>
-    `;
-    container.appendChild(card);
-  }
-}
-
-function buildResearchCards() {
-  const container = document.getElementById("research-container");
-  container.innerHTML = "";
-
-  let collection;
-  if (game.era === "cellular") collection = game.cellularResearch;
-  else if (game.era === "multicellular") collection = game.multiResearch;
-  else collection = game.tribalResearch;
-
-  for (let id in collection) {
-    const tech = collection[id];
-    const card = document.createElement("div");
-    card.className = "item-card";
-
-    let costs = [];
-    if (game.era === "cellular") {
-      if (tech.costRna > 0) costs.push(tech.costRna + " RNA");
-      if (tech.costDna > 0) costs.push(tech.costDna + " DNA");
-      if (tech.costAtp > 0) costs.push(tech.costAtp + " ATP");
-    } else if (game.era === "multicellular") {
-      if (tech.costBio > 0) costs.push(tech.costBio + " Biyokütle");
-      if (tech.costSen > 0) costs.push(tech.costSen + " Zeka");
-    } else {
-      if (tech.costKnow > 0) costs.push(tech.costKnow + " Bilgi");
-      if (tech.costWood > 0) costs.push(tech.costWood + " Odun");
-    }
-
-    card.innerHTML = `
-      <div class="item-header">
-        <span class="item-title">${tech.name}</span>
-      </div>
-      <p class="item-desc">${tech.desc}</p>
-      <div class="item-effect">${tech.effect}</div>
-      <div class="item-footer">
-        <span class="item-cost">${costs.join(" + ")}</span>
-        <button class="action-btn" id="btn-tech-${id}" onclick="handleBuyResearch('${id}')">Geliştir</button>
-      </div>
-    `;
-    container.appendChild(card);
-  }
-}
-
-function buildSpeciesCards() {
-  const container = document.getElementById("species-cards-container");
-  if (!container) return;
-  container.innerHTML = "";
-
-  game.speciesList.forEach(spec => {
-    const card = document.createElement("div");
-    card.className = "species-card" + (game.selectedSpecies === spec.id ? " selected" : "");
-    card.onclick = () => selectSpecies(spec.id);
-
-    card.innerHTML = `
-      <div class="species-title">
-        <span>${spec.icon}</span>
-        <span>${spec.name}</span>
-        ${game.selectedSpecies === spec.id ? '<span style="color:#ec4899; margin-left:auto;">✓ Seçildi</span>' : ''}
-      </div>
-      <div class="species-trait">Özellik: ${spec.trait}</div>
-      <p class="item-desc">${spec.desc}</p>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// --- CHEAT HELPERS ---
-function cheatAdd(type, amount) {
-  if (game.era === "cellular") {
-    if (type === 'primary') {
-      game.cellular.rnaCap = Math.max(game.cellular.rnaCap, 1500);
-      game.cellular.rna = Math.min(game.cellular.rnaCap, game.cellular.rna + amount);
-    } else if (type === 'secondary') {
-      game.cellular.dnaCap = Math.max(game.cellular.dnaCap, 300);
-      game.cellular.dna = Math.min(game.cellular.dnaCap, game.cellular.dna + amount);
-    } else if (type === 'energy') {
-      game.cellular.atpCap = Math.max(game.cellular.atpCap, 200);
-      game.cellular.atp = Math.min(game.cellular.atpCap, game.cellular.atp + amount);
-    }
-  } else if (game.era === "multicellular") {
-    if (type === 'primary') {
-      game.multi.biomassCap = Math.max(game.multi.biomassCap, 2000);
-      game.multi.biomass = Math.min(game.multi.biomassCap, game.multi.biomass + amount);
-    } else if (type === 'secondary') {
-      game.multi.sentienceCap = Math.max(game.multi.sentienceCap, 500);
-      game.multi.sentience = Math.min(game.multi.sentienceCap, game.multi.sentience + amount);
-    } else if (type === 'energy') {
-      game.multi.foodCap = Math.max(game.multi.foodCap, 500);
-      game.multi.food = Math.min(game.multi.foodCap, game.multi.food + amount);
-    }
-  } else {
-    // Tribal Era Cheat
-    if (type === 'primary') {
-      game.tribal.woodCap = Math.max(game.tribal.woodCap, 1000);
-      game.tribal.wood = Math.min(game.tribal.woodCap, game.tribal.wood + amount);
-    } else if (type === 'secondary') {
-      game.tribal.stoneCap = Math.max(game.tribal.stoneCap, 800);
-      game.tribal.stone = Math.min(game.tribal.stoneCap, game.tribal.stone + amount);
-    } else if (type === 'energy') {
-      game.tribal.foodCap = Math.max(game.tribal.foodCap, 1000);
-      game.tribal.food = Math.min(game.tribal.foodCap, game.tribal.food + amount);
-      game.tribal.knowledgeCap = Math.max(game.tribal.knowledgeCap, 500);
-      game.tribal.knowledge = Math.min(game.tribal.knowledgeCap, game.tribal.knowledge + amount);
-    }
-  }
-  showToast("+" + amount + " Kaynak Eklendi");
+// --- CHEAT FOR TESTING ---
+function cheatRna() {
+  if (game.res.rnaCap < 2000) game.res.rnaCap = 2000;
+  if (game.res.dnaCap < 500) game.res.dnaCap = 500;
+  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + 1000);
+  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + 100);
+  showToast("+1000 RNA & +100 DNA eklendi!");
   renderUI();
 }
 
@@ -1564,279 +778,156 @@ function forceSave() {
 }
 
 function resetSave() {
-  if (confirm("Tüm oyun sıfırlansın mı?")) {
+  if (confirm("Oyun sıfırlansın mı?")) {
     safeStore.remove("evolve_mobile_save");
     location.reload();
   }
 }
 
+// --- RATES ---
+function getRnaRate() {
+  let rate = (game.organelles.ribosome.count * 0.5) +
+             (game.organelles.cytoplasm.count * 1.2) +
+             (game.organelles.flagellum.count * 3.5);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate;
+}
+
+function getDnaRate() {
+  let rate = (game.organelles.nucleus.count * 0.2);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate;
+}
+
+function getAtpRate() {
+  let rate = (game.organelles.mitochondria.count * 1.0);
+  if (game.research.glycolysis.bought) rate += 0.3;
+  return rate;
+}
+
 // --- RENDER FUNCTION ---
 function renderUI() {
-  if (game.era === "cellular") {
-    const elRna = document.getElementById("val-rna");
-    if (elRna) elRna.innerText = formatNumber(game.cellular.rna);
-    const elRnaCap = document.getElementById("label-rna-cap");
-    if (elRnaCap) elRnaCap.innerText = "/ " + formatNumber(game.cellular.rnaCap);
+  // Resources
+  document.getElementById("val-rna").innerText = formatNumber(game.res.rna);
+  document.getElementById("label-rna-cap").innerText = "/ " + formatNumber(game.res.rnaCap);
+  document.getElementById("val-dna").innerText = formatNumber(game.res.dna);
+  document.getElementById("label-dna-cap").innerText = "/ " + formatNumber(game.res.dnaCap);
+  document.getElementById("val-atp").innerText = formatNumber(game.res.atp);
+  document.getElementById("label-atp-cap").innerText = "/ " + formatNumber(game.res.atpCap);
 
-    const elDna = document.getElementById("val-dna");
-    if (elDna) elDna.innerText = formatNumber(game.cellular.dna);
-    const elDnaCap = document.getElementById("label-dna-cap");
-    if (elDnaCap) elDnaCap.innerText = "/ " + formatNumber(game.cellular.dnaCap);
+  document.getElementById("rate-rna").innerText = "+" + getRnaRate().toFixed(1) + "/sn";
+  document.getElementById("rate-dna").innerText = "+" + getDnaRate().toFixed(1) + "/sn";
+  document.getElementById("rate-atp").innerText = "+" + getAtpRate().toFixed(1) + "/sn";
 
-    const elAtp = document.getElementById("val-atp");
-    if (elAtp) elAtp.innerText = formatNumber(game.cellular.atp);
-    const elAtpCap = document.getElementById("label-atp-cap");
-    if (elAtpCap) elAtpCap.innerText = "/ " + formatNumber(game.cellular.atpCap);
+  document.getElementById("synth-info").innerText = "+" + game.clickPower + " RNA üretmek için dokun";
 
-    const elRateRna = document.getElementById("rate-rna");
-    if (elRateRna) elRateRna.innerText = "+" + getCellularRnaRate().toFixed(2) + "/sn";
-    const elRateDna = document.getElementById("rate-dna");
-    if (elRateDna) elRateDna.innerText = "+" + getCellularDnaRate().toFixed(2) + "/sn";
-    const elRateAtp = document.getElementById("rate-atp");
-    if (elRateAtp) elRateAtp.innerText = (getCellularAtpRate() >= 0 ? "+" : "") + getCellularAtpRate().toFixed(2) + "/sn";
+  // Organelles
+  for (let id in game.organelles) {
+    const org = game.organelles[id];
+    const btn = document.getElementById("btn-buy-" + id);
+    const costEl = document.getElementById("cost-" + id);
+    const countEl = document.getElementById("count-" + id);
 
-    document.getElementById("synth-info").innerText = "+" + (game.cellular.clickPower * getMultiplier()) + " RNA üretmek için dokun";
+    if (btn && costEl) {
+      let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
+      let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
 
-    const surgeTimer = document.getElementById("surge-timer");
-    const btnSurge = document.getElementById("btn-surge");
-    if (game.surgeSecondsLeft > 0) {
-      surgeTimer.innerText = Math.ceil(game.surgeSecondsLeft) + " sn kaldı (2x)";
-      btnSurge.classList.add("disabled");
-    } else {
-      surgeTimer.innerText = "Hazır";
-      if (game.cellular.atp >= 25) btnSurge.classList.remove("disabled");
-      else btnSurge.classList.add("disabled");
+      costEl.innerText = formatNumber(cost) + " RNA";
+      countEl.innerText = "x" + org.count;
+
+      if (game.res.rna >= cost) {
+        btn.classList.remove("disabled");
+        costEl.classList.remove("red");
+      } else {
+        btn.classList.add("disabled");
+        costEl.classList.add("red");
+      }
     }
+  }
 
-    for (let id in game.organelles) {
-      const org = game.organelles[id];
-      const btn = document.getElementById("btn-buy-" + id);
-      const costEl = document.getElementById("cost-" + id);
-      const countEl = document.getElementById("count-" + id);
-
-      if (btn && costEl) {
-        let qty = game.buyMult === "max" ? calculateMax(org, game.cellular.rna).count : game.buyMult;
-        let cost = game.buyMult === "max" ? calculateMax(org, game.cellular.rna).cost : calculateCost(org, qty);
-        let atpCost = (org.costAtp || 0) * qty;
-
-        let costStr = formatNumber(cost) + " RNA";
-        if (atpCost > 0) costStr += " + " + atpCost + " ATP";
-        costEl.innerText = costStr;
-        countEl.innerText = "x" + org.count;
-
-        if (game.cellular.rna >= cost && game.cellular.atp >= atpCost) {
+  // Research
+  for (let id in game.research) {
+    const tech = game.research[id];
+    const btn = document.getElementById("btn-tech-" + id);
+    if (btn) {
+      if (tech.bought) {
+        btn.innerText = "Geliştirildi ✓";
+        btn.classList.add("disabled");
+        btn.style.background = "#059669";
+      } else {
+        const canAfford = game.res.rna >= tech.costRna && game.res.dna >= tech.costDna;
+        if (canAfford) {
           btn.classList.remove("disabled");
-          costEl.classList.remove("red");
         } else {
           btn.classList.add("disabled");
-          costEl.classList.add("red");
-        }
-      }
-    }
-
-    for (let id in game.cellularResearch) {
-      const tech = game.cellularResearch[id];
-      const btn = document.getElementById("btn-tech-" + id);
-      if (btn) {
-        if (tech.bought) {
-          btn.innerText = "Açıldı ✓";
-          btn.classList.add("disabled");
-          btn.style.background = "#059669";
-        } else {
-          const canAfford = game.cellular.rna >= tech.costRna && game.cellular.dna >= tech.costDna && game.cellular.atp >= tech.costAtp;
-          if (canAfford) btn.classList.remove("disabled");
-          else btn.classList.add("disabled");
-        }
-      }
-    }
-  } else if (game.era === "multicellular") {
-    const elBio = document.getElementById("val-bio");
-    if (elBio) elBio.innerText = formatNumber(game.multi.biomass);
-    const elBioCap = document.getElementById("label-bio-cap");
-    if (elBioCap) elBioCap.innerText = "/ " + formatNumber(game.multi.biomassCap);
-
-    const elSen = document.getElementById("val-sen");
-    if (elSen) elSen.innerText = formatNumber(game.multi.sentience);
-    const elSenCap = document.getElementById("label-sen-cap");
-    if (elSenCap) elSenCap.innerText = "/ " + formatNumber(game.multi.sentienceCap);
-
-    const elFood = document.getElementById("val-food");
-    if (elFood) elFood.innerText = formatNumber(game.multi.food);
-    const elFoodCap = document.getElementById("label-food-cap");
-    if (elFoodCap) elFoodCap.innerText = "/ " + formatNumber(game.multi.foodCap);
-
-    const elRateBio = document.getElementById("rate-bio");
-    if (elRateBio) elRateBio.innerText = "+" + getMultiBiomassRate().toFixed(2) + "/sn";
-    const elRateSen = document.getElementById("rate-sen");
-    if (elRateSen) elRateSen.innerText = "+" + getMultiSentienceRate().toFixed(2) + "/sn";
-    const elRateFood = document.getElementById("rate-food");
-    if (elRateFood) elRateFood.innerText = (getMultiFoodRate() >= 0 ? "+" : "") + getMultiFoodRate().toFixed(2) + "/sn";
-
-    document.getElementById("synth-info").innerText = "+" + (game.multi.clickPower * (game.selectedSpecies === "insect" ? 3 : 1)) + " Biyokütle üret";
-
-    for (let id in game.organs) {
-      const organ = game.organs[id];
-      const btn = document.getElementById("btn-buy-" + id);
-      const costEl = document.getElementById("cost-" + id);
-      const countEl = document.getElementById("count-" + id);
-
-      if (btn && costEl) {
-        let qty = game.buyMult === "max" ? calculateMax(organ, game.multi.biomass).count : game.buyMult;
-        let cost = game.buyMult === "max" ? calculateMax(organ, game.multi.biomass).cost : calculateCost(organ, qty);
-        let foodCost = (organ.costFood || 0) * qty;
-
-        let costStr = formatNumber(cost) + " Biyokütle";
-        if (foodCost > 0) costStr += " + " + foodCost + " Besin";
-        costEl.innerText = costStr;
-        countEl.innerText = "x" + organ.count;
-
-        if (game.multi.biomass >= cost && game.multi.food >= foodCost) {
-          btn.classList.remove("disabled");
-          costEl.classList.remove("red");
-        } else {
-          btn.classList.add("disabled");
-          costEl.classList.add("red");
-        }
-      }
-    }
-
-    for (let id in game.multiResearch) {
-      const tech = game.multiResearch[id];
-      const btn = document.getElementById("btn-tech-" + id);
-      if (btn) {
-        if (tech.bought) {
-          btn.innerText = "Evrildi ✓";
-          btn.classList.add("disabled");
-          btn.style.background = "#db2777";
-        } else {
-          const canAfford = game.multi.biomass >= tech.costBio && game.multi.sentience >= tech.costSen;
-          if (canAfford) btn.classList.remove("disabled");
-          else btn.classList.add("disabled");
-        }
-      }
-    }
-  } else {
-    // 3. TRIBAL ERA RENDERING
-    const elPop = document.getElementById("val-pop");
-    if (elPop) elPop.innerText = game.tribal.pop;
-    const elPopCap = document.getElementById("label-pop-cap");
-    if (elPopCap) elPopCap.innerText = "/ " + game.tribal.popCap;
-
-    const elFood = document.getElementById("val-food");
-    if (elFood) elFood.innerText = formatNumber(game.tribal.food);
-    const elFoodCap = document.getElementById("label-food-cap");
-    if (elFoodCap) elFoodCap.innerText = "/ " + formatNumber(game.tribal.foodCap);
-    const elRateFood = document.getElementById("rate-food");
-    if (elRateFood) elRateFood.innerText = (getTribalFoodRate() >= 0 ? "+" : "") + getTribalFoodRate().toFixed(2) + "/sn";
-
-    const elWood = document.getElementById("val-wood");
-    if (elWood) elWood.innerText = formatNumber(game.tribal.wood);
-    const elWoodCap = document.getElementById("label-wood-cap");
-    if (elWoodCap) elWoodCap.innerText = "/ " + formatNumber(game.tribal.woodCap);
-    const elRateWood = document.getElementById("rate-wood");
-    if (elRateWood) elRateWood.innerText = "+" + getTribalWoodRate().toFixed(2) + "/sn";
-
-    const elStone = document.getElementById("val-stone");
-    if (elStone) elStone.innerText = formatNumber(game.tribal.stone);
-    const elStoneCap = document.getElementById("label-stone-cap");
-    if (elStoneCap) elStoneCap.innerText = "/ " + formatNumber(game.tribal.stoneCap);
-    const elRateStone = document.getElementById("rate-stone");
-    if (elRateStone) elRateStone.innerText = "+" + getTribalStoneRate().toFixed(2) + "/sn";
-
-    document.getElementById("synth-info").innerText = "+" + game.tribal.clickPower + " Besin Topla";
-
-    // Unassigned badge
-    const unBadge = document.getElementById("unassigned-badge");
-    if (unBadge) unBadge.innerText = getUnassignedWorkers() + " Boşta";
-
-    // Job counts
-    for (let j in game.jobs) {
-      const cEl = document.getElementById("job-count-" + j);
-      if (cEl) cEl.innerText = game.jobs[j].count;
-    }
-
-    // Tribal Buildings
-    for (let id in game.tribalBuildings) {
-      const bld = game.tribalBuildings[id];
-      const btn = document.getElementById("btn-buy-" + id);
-      const costEl = document.getElementById("cost-" + id);
-      const countEl = document.getElementById("count-" + id);
-
-      if (btn && costEl) {
-        let qty = game.buyMult === "max" ? calculateMax(bld, game.tribal.wood).count : game.buyMult;
-        let cost = game.buyMult === "max" ? calculateMax(bld, game.tribal.wood).cost : calculateCost(bld, qty);
-        let stoneCost = (bld.costStone || 0) * qty;
-
-        let costStr = formatNumber(cost) + " Odun";
-        if (stoneCost > 0) costStr += " + " + stoneCost + " Taş";
-        costEl.innerText = costStr;
-        countEl.innerText = "x" + bld.count;
-
-        if (game.tribal.wood >= cost && game.tribal.stone >= stoneCost) {
-          btn.classList.remove("disabled");
-          costEl.classList.remove("red");
-        } else {
-          btn.classList.add("disabled");
-          costEl.classList.add("red");
-        }
-      }
-    }
-
-    // Tribal Research
-    for (let id in game.tribalResearch) {
-      const tech = game.tribalResearch[id];
-      const btn = document.getElementById("btn-tech-" + id);
-      if (btn) {
-        if (tech.bought) {
-          btn.innerText = "Keşfedildi ✓";
-          btn.classList.add("disabled");
-          btn.style.background = "#d97706";
-        } else {
-          const canAfford = game.tribal.knowledge >= tech.costKnow && game.tribal.wood >= tech.costWood;
-          if (canAfford) btn.classList.remove("disabled");
-          else btn.classList.add("disabled");
         }
       }
     }
   }
 }
 
+// --- BUILD HTML CARDS ---
+function buildOrganelleCards() {
+  const container = document.getElementById("organelle-cards-container");
+  container.innerHTML = "";
+
+  for (let id in game.organelles) {
+    const org = game.organelles[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${org.name}</span>
+        <span class="item-count" id="count-${id}">x${org.count}</span>
+      </div>
+      <p class="item-desc">${org.desc}</p>
+      <div class="item-effect">${org.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost" id="cost-${id}">0 RNA</span>
+        <button class="action-btn" id="btn-buy-${id}" onclick="handleBuyOrganelle('${id}')">Geliştir</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function buildResearchCards() {
+  const container = document.getElementById("research-cards-container");
+  container.innerHTML = "";
+
+  for (let id in game.research) {
+    const tech = game.research[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+
+    let costTexts = [];
+    if (tech.costRna > 0) costTexts.push(tech.costRna + " RNA");
+    if (tech.costDna > 0) costTexts.push(tech.costDna + " DNA");
+
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${tech.name}</span>
+      </div>
+      <p class="item-desc">${tech.desc}</p>
+      <div class="item-effect">${tech.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost">${costTexts.join(" + ")}</span>
+        <button class="action-btn" id="btn-tech-${id}" onclick="handleBuyResearch('${id}')">Mutasyon Yap</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
 // --- TICK LOOP ---
-let populationGrowTimer = 0;
 function gameTick() {
   const now = Date.now();
   const dt = (now - game.lastTick) / 1000;
   game.lastTick = now;
 
-  if (game.era === "cellular") {
-    if (game.surgeSecondsLeft > 0) game.surgeSecondsLeft = Math.max(0, game.surgeSecondsLeft - dt);
-    game.cellular.rna = Math.min(game.cellular.rnaCap, game.cellular.rna + getCellularRnaRate() * dt);
-    game.cellular.dna = Math.min(game.cellular.dnaCap, game.cellular.dna + getCellularDnaRate() * dt);
-    game.cellular.atp = Math.max(0, Math.min(game.cellular.atpCap, game.cellular.atp + getCellularAtpRate() * dt));
-  } else if (game.era === "multicellular") {
-    game.multi.biomass = Math.min(game.multi.biomassCap, game.multi.biomass + getMultiBiomassRate() * dt);
-    game.multi.sentience = Math.min(game.multi.sentienceCap, game.multi.sentience + getMultiSentienceRate() * dt);
-    game.multi.food = Math.max(0, Math.min(game.multi.foodCap, game.multi.food + getMultiFoodRate() * dt));
-  } else {
-    // Tribal Era Progression
-    game.tribal.wood = Math.min(game.tribal.woodCap, game.tribal.wood + getTribalWoodRate() * dt);
-    game.tribal.stone = Math.min(game.tribal.stoneCap, game.tribal.stone + getTribalStoneRate() * dt);
-    game.tribal.knowledge = Math.min(game.tribal.knowledgeCap, game.tribal.knowledge + getTribalKnowledgeRate() * dt);
-
-    let foodDelta = getTribalFoodRate() * dt;
-    game.tribal.food = Math.max(0, Math.min(game.tribal.foodCap, game.tribal.food + foodDelta));
-
-    // Population Growth check (Grows if food > 50% cap and pop < popCap)
-    populationGrowTimer += dt;
-    if (populationGrowTimer >= 15) { // every 15s check growth
-      populationGrowTimer = 0;
-      if (game.tribal.food > (game.tribal.foodCap * 0.4) && game.tribal.pop < game.tribal.popCap) {
-        game.tribal.pop += 1;
-        showToast("👶 Kabileye yeni bir üye katıldı!");
-        addLog("Nüfus Artışı: Kabile büyüyor (" + game.tribal.pop + "/" + game.tribal.popCap + ")");
-      }
-    }
-  }
+  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + getRnaRate() * dt);
+  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + getDnaRate() * dt);
+  game.res.atp = Math.min(game.res.atpCap, game.res.atp + getAtpRate() * dt);
 
   renderUI();
 }
@@ -1851,98 +942,67 @@ function loadGameState() {
   if (raw) {
     try {
       const data = JSON.parse(raw);
-      if (data.era) game.era = data.era;
-      if (data.selectedSpecies) game.selectedSpecies = data.selectedSpecies;
-      if (data.cellular) Object.assign(game.cellular, data.cellular);
-      if (data.multi) Object.assign(game.multi, data.multi);
-      if (data.tribal) Object.assign(game.tribal, data.tribal);
-
-      if (data.jobs) {
-        for (let k in data.jobs) {
-          if (game.jobs[k]) game.jobs[k].count = data.jobs[k].count;
-        }
-      }
+      if (data.res) Object.assign(game.res, data.res);
+      if (data.clickPower) game.clickPower = data.clickPower;
       if (data.organelles) {
         for (let k in data.organelles) {
           if (game.organelles[k]) game.organelles[k].count = data.organelles[k].count;
         }
       }
-      if (data.cellularResearch) {
-        for (let k in data.cellularResearch) {
-          if (game.cellularResearch[k]) game.cellularResearch[k].bought = data.cellularResearch[k].bought;
+      if (data.research) {
+        for (let k in data.research) {
+          if (game.research[k]) game.research[k].bought = data.research[k].bought;
         }
       }
-      if (data.organs) {
-        for (let k in data.organs) {
-          if (game.organs[k]) game.organs[k].count = data.organs[k].count;
-        }
-      }
-      if (data.multiResearch) {
-        for (let k in data.multiResearch) {
-          if (game.multiResearch[k]) game.multiResearch[k].bought = data.multiResearch[k].bought;
-        }
-      }
-      if (data.tribalBuildings) {
-        for (let k in data.tribalBuildings) {
-          if (game.tribalBuildings[k]) game.tribalBuildings[k].count = data.tribalBuildings[k].count;
-        }
-      }
-      if (data.tribalResearch) {
-        for (let k in data.tribalResearch) {
-          if (game.tribalResearch[k]) game.tribalResearch[k].bought = data.tribalResearch[k].bought;
-        }
-      }
+      updateCaps();
 
       if (data.lastTick) {
         const diffSec = Math.min(86400, (Date.now() - data.lastTick) / 1000);
         if (diffSec > 10) {
-          if (game.era === "cellular") {
-            const gain = Math.min(game.cellular.rnaCap - game.cellular.rna, getCellularRnaRate() * diffSec);
-            game.cellular.rna += gain;
-            showToast("Hoş geldin! +" + formatNumber(gain) + " RNA toplandı.");
-          } else if (game.era === "multicellular") {
-            const gain = Math.min(game.multi.biomassCap - game.multi.biomass, getMultiBiomassRate() * diffSec);
-            game.multi.biomass += gain;
-            showToast("Hoş geldin! +" + formatNumber(gain) + " Biyokütle toplandı.");
-          } else {
-            const gainW = Math.min(game.tribal.woodCap - game.tribal.wood, getTribalWoodRate() * diffSec);
-            game.tribal.wood += gainW;
-            showToast("Hoş geldin! Kabilen sen yokken +" + formatNumber(gainW) + " Odun üretti.");
-          }
+          const rnaGained = Math.min(game.res.rnaCap - game.res.rna, getRnaRate() * diffSec);
+          game.res.rna += rnaGained;
+          showToast("Hoş geldin! +" + formatNumber(rnaGained) + " RNA toplandı.");
         }
       }
-    } catch(e) {
+    } catch (e) {
       console.error("Load failed", e);
     }
   }
 }
 
-// --- ATTACH TO WINDOW ---
-window.handlePrimaryClick = handlePrimaryClick;
-window.handleBuyStructure = handleBuyStructure;
-window.handleBuyResearch = handleBuyResearch;
-window.assignWorker = assignWorker;
-window.selectSpecies = selectSpecies;
-window.activateSurge = activateSurge;
-window.switchTab = switchTab;
-window.setMultiplier = setMultiplier;
-window.cheatAdd = cheatAdd;
-window.forceSave = forceSave;
-window.resetSave = resetSave;
-
-// --- BOOTSTRAP ---
+// --- BOOTSTRAP (RUNS ONCE JAVASCRIPT IS ACTIVE) ---
 window.addEventListener("DOMContentLoaded", function() {
+  // 1. Hide the warning banner because JavaScript is working!
   const banner = document.getElementById("js-disabled-banner");
   if (banner) banner.style.display = "none";
 
+  // 2. Set status badge to Active
+  const badge = document.getElementById("js-status-badge");
+  if (badge) {
+    badge.innerHTML = '<span class="pulse-dot"></span><span>Motor: Aktif (Çalışıyor)</span>';
+  }
+
+  // 3. Build UI & Start
+  buildOrganelleCards();
+  buildResearchCards();
   loadGameState();
   updateCaps();
-  setupEraInterface();
   renderUI();
 
+  // 4. Timers
   setInterval(gameTick, 100);
   setInterval(saveGameState, 5000);
-  console.log("Evolve Mobile Era 3 Engine initialized!");
+  
+window.handleSynthClick = handleSynthClick;
+window.handleBuyOrganelle = handleBuyOrganelle;
+window.handleBuyResearch = handleBuyResearch;
+window.switchTab = switchTab;
+window.setMultiplier = setMultiplier;
+window.cheatRna = cheatRna;
+window.forceSave = forceSave;
+window.resetSave = resetSave;
+
+console.log("Evolve Mobile Engine initialized successfully!");
 });
 </script>
 </body>
