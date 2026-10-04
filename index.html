@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Evolve Mobile - Hücre Çağı</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #131b2e;
+      --card-border: #1e293b;
+      --accent-rna: #10b981;
+      --accent-dna: #38bdf8;
+      --accent-atp: #f59e0b;
+      --accent-text: #f8fafc;
+      --muted: #64748b;
+      --danger: #ef4444;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: var(--bg);
+      color: var(--accent-text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    #app-container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      position: relative;
+      background-color: var(--bg);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+
+    /* Drive Preview Warning Banner */
+    #js-disabled-banner {
+      background: #b91c1c;
+      color: white;
+      padding: 14px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
+      border-bottom: 2px solid #ef4444;
+      display: block;
+    }
+
+    #js-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--accent-rna);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-rna);
+      box-shadow: 0 0 8px var(--accent-rna);
+    }
+
+    /* Top Sticky Header */
+    header {
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 14px;
+      z-index: 100;
+    }
+    .game-header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .game-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .resources-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+    }
+    .res-pill {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      flex-direction: column;
+    }
+    .res-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    .res-val {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .res-rate {
+      font-size: 10px;
+      font-weight: 500;
+      color: #94a3b8;
+    }
+    .res-rna .res-val { color: var(--accent-rna); }
+    .res-dna .res-val { color: var(--accent-dna); }
+    .res-atp .res-val { color: var(--accent-atp); }
+
+    /* Main Scroll Area */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px 75px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Big Clicker Button */
+    .synth-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+      transition: transform 0.05s ease, filter 0.05s ease;
+      position: relative;
+      user-select: none;
+    }
+    .synth-btn:active {
+      transform: scale(0.96);
+      filter: brightness(0.88);
+    }
+    .synth-btn .sub {
+      font-size: 11px;
+      font-weight: 400;
+      opacity: 0.9;
+      display: block;
+    }
+
+    /* Multiplier Bar */
+    .multiplier-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: -4px;
+    }
+    .mult-group {
+      display: flex;
+      gap: 6px;
+    }
+    .mult-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--muted);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .mult-btn.active {
+      color: #38bdf8;
+      background: #1e293b;
+      border-color: #0284c7;
+    }
+
+    /* Item Card */
+    .section-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
+    .item-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .item-count {
+      font-size: 11px;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+    .item-desc {
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+    .item-effect {
+      font-size: 11px;
+      color: var(--accent-rna);
+      font-weight: 600;
+    }
+    .item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    .item-cost {
+      font-size: 12px;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+    .item-cost.red {
+      color: #f87171;
+    }
+    .action-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 75px;
+      text-align: center;
+      transition: transform 0.05s ease, background 0.1s ease;
+    }
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+    .action-btn.disabled, .action-btn:disabled {
+      background: #1e293b !important;
+      color: #64748b !important;
+      cursor: not-allowed;
+      transform: none;
+      border: 1px solid #334155;
+    }
+    .action-btn.green {
+      background: #059669;
+    }
+
+    /* Tabs */
+    .tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tab-pane.active {
+      display: flex;
+    }
+
+    /* Bottom Nav Bar */
+    nav.bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--card-border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      z-index: 200;
+    }
+    .nav-tab {
+      background: none;
+      border: none;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .nav-tab.active {
+      color: var(--accent-rna);
+    }
+    .nav-tab.active .nav-icon {
+      transform: scale(1.15);
+    }
+    .nav-icon {
+      font-size: 18px;
+      transition: transform 0.1s;
+    }
+
+    /* Logs */
+    .log-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px;
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+    }
+    .log-item {
+      color: #94a3b8;
+      border-left: 2px solid var(--card-border);
+      padding-left: 6px;
+      line-height: 1.35;
+    }
+    .log-item.special {
+      color: var(--accent-dna);
+      border-left-color: var(--accent-dna);
+    }
+
+    /* Floating Click Indicator */
+    .click-feedback {
+      position: fixed;
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--accent-rna);
+      pointer-events: none;
+      animation: floatFade 0.6s ease-out forwards;
+      z-index: 999;
+    }
+    @keyframes floatFade {
+      0% { opacity: 1; transform: translate(-50%, 0); }
+      100% { opacity: 0; transform: translate(-50%, -40px) scale(1.2); }
+    }
+
+    /* Toast */
+    #toast-msg {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e293b;
+      border: 1px solid var(--accent-rna);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      z-index: 1000;
+      display: none;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app-container">
+  <!-- Warning Banner: Visible only if JS is blocked (like in Google Drive preview) -->
+  <div id="js-disabled-banner">
+    ⚠️ <b>DİKKAT:</b> Google Drive önizleme ekranındasınız. Google Drive güvenlik gereği buton kodlarını çalıştırmaz.<br>
+    <b>Nasıl Oynanır:</b> Sağ üstteki <b>İndir</b> butonuna basın, inen <code>.html</code> dosyasını doğrudan Chrome veya Safari tarayıcınızda açın!
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="game-header-top">
+      <span class="game-title">EVOLVE: HÜCRE ÇAĞI</span>
+      <span id="js-status-badge">
+        <span class="pulse-dot"></span>
+        <span>Motor: Başlatılıyor...</span>
+      </span>
+    </div>
+    <div class="resources-grid">
+      <div class="res-pill res-rna">
+        <div class="res-label"><span>RNA</span><span id="label-rna-cap">/ 250</span></div>
+        <div class="res-val" id="val-rna">50</div>
+        <div class="res-rate" id="rate-rna">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-dna">
+        <div class="res-label"><span>DNA</span><span id="label-dna-cap">/ 50</span></div>
+        <div class="res-val" id="val-dna">0</div>
+        <div class="res-rate" id="rate-dna">+0.0/sn</div>
+      </div>
+      <div class="res-pill res-atp">
+        <div class="res-label"><span>ATP Enerji</span><span id="label-atp-cap">/ 100</span></div>
+        <div class="res-val" id="val-atp">0</div>
+        <div class="res-rate" id="rate-atp">+0.0/sn</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View -->
+  <main id="main-area">
+    <!-- Tab 1: Hücre & Organeller -->
+    <div id="tab-organelles" class="tab-pane active">
+      <button class="synth-btn" id="main-synth-btn" onclick="handleSynthClick(event)">
+        <span style="font-size:26px;">🧬</span>
+        <span>
+          <span>Primordiyal Çorbayı Sentezle</span>
+          <span class="sub" id="synth-info">+1 RNA üretmek için dokun</span>
+        </span>
+      </button>
+
+      <div class="multiplier-bar">
+        <span class="section-title">Organeller</span>
+        <div class="mult-group">
+          <button class="mult-btn active" id="btn-mult-1" onclick="setMultiplier(1)">1x</button>
+          <button class="mult-btn" id="btn-mult-10" onclick="setMultiplier(10)">10x</button>
+          <button class="mult-btn" id="btn-mult-max" onclick="setMultiplier('max')">Max</button>
+        </div>
+      </div>
+
+      <div id="organelle-cards-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- Tab 2: Evrim & Araştırma -->
+    <div id="tab-research" class="tab-pane">
+      <div class="section-title">Genetik Adaptasyon & Evrim</div>
+      <div id="research-cards-container" style="display:flex; flex-direction:column; gap:10px;">
+        <!-- Dynamically rendered -->
+      </div>
+    </div>
+
+    <!-- Tab 3: Günlük -->
+    <div id="tab-logs" class="tab-pane">
+      <div class="section-title">Evrim Tarihçesi</div>
+      <div class="log-container" id="log-list">
+        <div class="log-item special">0. Gün: Sıcak volkanik çorba içinde ilk moleküler bağlar oluştu.</div>
+      </div>
+    </div>
+
+    <!-- Tab 4: Ayarlar -->
+    <div id="tab-settings" class="tab-pane">
+      <div class="section-title">Oyun Kontrolleri</div>
+      <div class="item-card">
+        <div class="item-title">💾 İlerleme Kaydetme</div>
+        <p class="item-desc">Oyun otomatik olarak her 5 saniyede bir tarayıcınıza kaydedilir.</p>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="action-btn green" onclick="forceSave()">Şimdi Kaydet</button>
+          <button class="action-btn" style="background:#dc2626;" onclick="resetSave()">Sıfırla</button>
+        </div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-title">📱 Mobil Kurulum İpucu</div>
+        <p class="item-desc">Bu oyunu Safari veya Chrome menüsünden <b>"Ana Ekrana Ekle" (Add to Home Screen)</b> derseniz, tam ekran bir mobil uygulama gibi çalışır.</p>
+      </div>
+
+      <div class="item-card">
+        <div class="item-title">🧪 Test Modu (+1000 RNA)</div>
+        <p class="item-desc">Bütün mekanikleri ve butonları anında hızlıca test etmek için:</p>
+        <div style="margin-top:8px;">
+          <button class="action-btn" style="background:#475569;" onclick="cheatRna()">+1000 RNA Ekle</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <button class="nav-tab active" id="nav-btn-organelles" onclick="switchTab('tab-organelles')">
+      <span class="nav-icon">🧬</span>
+      <span>Hücre</span>
+    </button>
+    <button class="nav-tab" id="nav-btn-research" onclick="switchTab('tab-research')">
+      <span class="nav-icon">🔬</span>
+      <span>Evrim</span>
+    </button>
+    <button class="nav-tab" id="nav-btn-logs" onclick="switchTab('tab-logs')">
+      <span class="nav-icon">📜</span>
+      <span>Günlük</span>
+    </button>
+    <button class="nav-tab" id="nav-btn-settings" onclick="switchTab('tab-settings')">
+      <span class="nav-icon">⚙️</span>
+      <span>Ayarlar</span>
+    </button>
+  </nav>
+
+  <!-- Toast -->
+  <div id="toast-msg">Bildirim</div>
+</div>
+
+<script>
+// --- ROBUST IN-MEMORY & LOCAL STORAGE ENGINE ---
+const safeStore = {
+  get: function(key) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(key);
+      }
+    } catch (e) {
+      console.warn("Storage read restricted", e);
+    }
+    return null;
+  },
+  set: function(key, val) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(key, val);
+      }
+    } catch (e) {
+      console.warn("Storage write restricted", e);
+    }
+  },
+  remove: function(key) {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.removeItem(key);
+      }
+    } catch (e) {}
+  }
+};
+
+// --- GAME STATE ---
+const game = {
+  res: {
+    rna: 50, // 50 Starter RNA so first buttons are immediately testable!
+    rnaCap: 250,
+    dna: 0,
+    dnaCap: 50,
+    atp: 0,
+    atpCap: 100
+  },
+  clickPower: 1,
+  buyMult: 1,
+  lastTick: Date.now(),
+  organelles: {
+    membrane: { id: "membrane", name: "Hücre Zarı", count: 0, baseCost: 15, costMult: 1.18, costRes: "rna", desc: "Zar yüzeyini genişleterek RNA ve besin depolama sınırını artırır.", effect: "+150 RNA & +50 ATP Deposu" },
+    ribosome: { id: "ribosome", name: "Ribozom", count: 0, baseCost: 20, costMult: 1.15, costRes: "rna", desc: "Amino asitleri RNA zincirlerine çeviren protein fabrikası.", effect: "+0.5 RNA/sn" },
+    cytoplasm: { id: "cytoplasm", name: "Sitoplazma Rezervi", count: 0, baseCost: 75, costMult: 1.16, costRes: "rna", desc: "Hücre içi sıvı yoğunluğunu artırarak sentez hızını yükseltir.", effect: "+1.2 RNA/sn, +100 RNA Deposu" },
+    mitochondria: { id: "mitochondria", name: "Mitokondri", count: 0, baseCost: 150, costMult: 1.20, costRes: "rna", desc: "Hücrenin enerji santrali. Kimyasal enerjiyi ATP'ye dönüştürür.", effect: "+1.0 ATP/sn" },
+    nucleus: { id: "nucleus", name: "Hücre Çekirdeği", count: 0, baseCost: 300, costMult: 1.25, costRes: "rna", desc: "Genetik bilgiyi korur, DNA sentezler ve çekirdek kapasitesini artırır.", effect: "+0.2 DNA/sn, +25 DNA Deposu" },
+    chromosome: { id: "chromosome", name: "Kromozom Sarmalı", count: 0, baseCost: 450, costMult: 1.22, costRes: "rna", desc: "DNA zincirlerini süper sarmal haline getirip paketleyerek DNA kapasitesini devasa oranda büyütür.", effect: "+50 DNA Deposu" },
+    flagellum: { id: "flagellum", name: "Kamçı (Flagellum)", count: 0, baseCost: 650, costMult: 1.25, costRes: "rna", desc: "Hücrenin hareket etmesini sağlayarak zengin besin havuzlarına ulaşır.", effect: "+3.5 RNA/sn" }
+  },
+  research: {
+    permeability: { id: "permeability", name: "Zar Geçirgenliği", costDna: 0, costRna: 35, bought: false, desc: "Çorbadaki serbest molekülleri daha hızlı yakalar.", effect: "Dokunma gücü +1" },
+    glycolysis: { id: "glycolysis", name: "Glikoliz Enzimleri", costDna: 0, costRna: 100, bought: false, desc: "Şeker moleküllerini parçalayarak ilkel ATP üretimi sağlar.", effect: "Pasif +0.3 ATP/sn" },
+    histone: { id: "histone", name: "Histon Protein Paketleme", costDna: 20, costRna: 200, bought: false, desc: "DNA'yı histon makaralarına sararak çekirdeğe sığdırır.", effect: "+50 DNA Kapasitesi" },
+    eukaryote: { id: "eukaryote", name: "Ökaryotik Dönüşüm", costDna: 35, costRna: 350, bought: false, desc: "Zarla çevrili organeller ve gelişmiş çekirdek. DNA çağını başlatır.", effect: "Tüm üretimler %50 artar" },
+    phagocytosis: { id: "phagocytosis", name: "Fagositoz (Yutma)", costDna: 50, costRna: 600, bought: false, desc: "Büyük besin kütlelerini içine alarak hızlı gelişme sağlar.", effect: "Dokunma gücü +5" },
+    multicellularity: { id: "multicellularity", name: "Çok Hücrelilik (Gelecek Çağ)", costDna: 100, costRna: 1500, bought: false, desc: "Hücreler kolonileşir ve iş bölümü yapar. Bir sonraki çağa geçiş!", effect: "Kara Yaşamı Çağının Kilidi Açılır!" }
+  }
+};
+
+// --- NUMBER FORMATTER ---
+function formatNumber(num) {
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+  if (num >= 1e3) return (num / 1e3).toFixed(1) + "k";
+  return Math.floor(num).toString();
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast-msg");
+  if (!t) return;
+  t.innerText = msg;
+  t.style.display = "block";
+  setTimeout(() => { t.style.display = "none"; }, 2500);
+}
+
+function addLog(msg, isSpecial) {
+  const list = document.getElementById("log-list");
+  if (!list) return;
+  const item = document.createElement("div");
+  item.className = "log-item" + (isSpecial ? " special" : "");
+  item.innerText = msg;
+  if (list.insertBefore) {
+    list.insertBefore(item, list.firstChild);
+  } else if (list.prepend) {
+    list.prepend(item);
+  } else {
+    list.appendChild(item);
+  }
+}
+
+// --- COST FORMULAS ---
+function calculateCost(org, qty) {
+  let sum = 0;
+  for (let i = 0; i < qty; i++) {
+    sum += Math.floor(org.baseCost * Math.pow(org.costMult, org.count + i));
+  }
+  return sum;
+}
+
+function calculateMax(org) {
+  let count = 0;
+  let res = game.res[org.costRes];
+  let sum = 0;
+  while (true) {
+    let next = Math.floor(org.baseCost * Math.pow(org.costMult, org.count + count));
+    if (sum + next <= res) {
+      sum += next;
+      count++;
+      if (count > 250) break;
+    } else {
+      break;
+    }
+  }
+  return { count: Math.max(1, count), cost: sum === 0 ? calculateCost(org, 1) : sum };
+}
+
+// --- TAB SWITCHER ---
+function switchTab(tabId) {
+  document.querySelectorAll(".tab-pane").forEach(p => p.classList.remove("active"));
+  document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+
+  const targetPane = document.getElementById(tabId);
+  if (targetPane) targetPane.classList.add("active");
+
+  const btnId = "nav-btn-" + tabId.replace("tab-", "");
+  const targetBtn = document.getElementById(btnId);
+  if (targetBtn) targetBtn.classList.add("active");
+}
+
+// --- MULTIPLIER SELECTOR ---
+function setMultiplier(m) {
+  game.buyMult = m;
+  document.querySelectorAll(".mult-btn").forEach(b => b.classList.remove("active"));
+  const btn = document.getElementById("btn-mult-" + m);
+  if (btn) btn.classList.add("active");
+  renderUI();
+}
+
+// --- MAIN SYNTHESIS CLICK ---
+function handleSynthClick(e) {
+  if (game.res.rna < game.res.rnaCap) {
+    game.res.rna = Math.min(game.res.rnaCap, game.res.rna + game.clickPower);
+  }
+
+  // Floating text
+  const floatEl = document.createElement("div");
+  floatEl.className = "click-feedback";
+  floatEl.innerText = "+" + game.clickPower + " RNA";
+
+  const btn = document.getElementById("main-synth-btn");
+  const rect = btn.getBoundingClientRect();
+  floatEl.style.left = (e && e.clientX ? e.clientX : rect.left + rect.width / 2) + "px";
+  floatEl.style.top = (e && e.clientY ? e.clientY : rect.top + 10) + "px";
+  document.body.appendChild(floatEl);
+  setTimeout(() => {
+    if (floatEl && floatEl.parentNode) {
+      floatEl.parentNode.removeChild(floatEl);
+    }
+  }, 600);
+
+  renderUI();
+}
+
+
+// --- DYNAMIC CAPACITY RECALCULATION ---
+function updateCaps() {
+  let rna = 250 + (game.organelles.membrane.count * 150) + (game.organelles.cytoplasm.count * 100);
+  let atp = 100 + (game.organelles.membrane.count * 50);
+  let dna = 50 + (game.organelles.nucleus.count * 25) + (game.organelles.chromosome.count * 50);
+  
+  if (game.research.histone && game.research.histone.bought) {
+    dna += 50;
+  }
+  
+  game.res.rnaCap = rna;
+  game.res.atpCap = atp;
+  game.res.dnaCap = dna;
+}
+
+// --- BUY ORGANELLE ACTION ---
+function handleBuyOrganelle(id) {
+  const org = game.organelles[id];
+  if (!org) return;
+
+  let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
+  let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
+
+  if (game.res[org.costRes] >= cost) {
+    game.res[org.costRes] -= cost;
+    org.count += qty;
+
+    updateCaps();
+
+    addLog(qty + "x " + org.name + " üretildi.");
+    showToast("+" + qty + " " + org.name);
+    renderUI();
+  }
+}
+
+// --- BUY RESEARCH ACTION ---
+function handleBuyResearch(id) {
+  const tech = game.research[id];
+  if (!tech || tech.bought) return;
+
+  if (game.res.rna >= tech.costRna && game.res.dna >= tech.costDna) {
+    game.res.rna -= tech.costRna;
+    game.res.dna -= tech.costDna;
+    tech.bought = true;
+
+    if (id === "permeability") game.clickPower += 1;
+    if (id === "phagocytosis") game.clickPower += 5;
+    if (id === "histone") updateCaps();
+    if (id === "multicellularity") {
+      showToast("Tebrikler! Çok Hücreli Çağa ulaştınız!");
+      addLog("DEVRİM: Çok Hücreli Çağ başladı! Yakında 2. Çağ gelecek.", true);
+    }
+
+    showToast(tech.name + " açıldı!");
+    addLog("Evrim: " + tech.name + " tamamlandı.", true);
+    renderUI();
+  }
+}
+
+// --- CHEAT FOR TESTING ---
+function cheatRna() {
+  if (game.res.rnaCap < 2000) game.res.rnaCap = 2000;
+  if (game.res.dnaCap < 500) game.res.dnaCap = 500;
+  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + 1000);
+  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + 100);
+  showToast("+1000 RNA & +100 DNA eklendi!");
+  renderUI();
+}
+
+function forceSave() {
+  saveGameState();
+  showToast("Oyun kaydedildi!");
+}
+
+function resetSave() {
+  if (confirm("Oyun sıfırlansın mı?")) {
+    safeStore.remove("evolve_mobile_save");
+    location.reload();
+  }
+}
+
+// --- RATES ---
+function getRnaRate() {
+  let rate = (game.organelles.ribosome.count * 0.5) +
+             (game.organelles.cytoplasm.count * 1.2) +
+             (game.organelles.flagellum.count * 3.5);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate;
+}
+
+function getDnaRate() {
+  let rate = (game.organelles.nucleus.count * 0.2);
+  if (game.research.eukaryote.bought) rate *= 1.5;
+  return rate;
+}
+
+function getAtpRate() {
+  let rate = (game.organelles.mitochondria.count * 1.0);
+  if (game.research.glycolysis.bought) rate += 0.3;
+  return rate;
+}
+
+// --- RENDER FUNCTION ---
+function renderUI() {
+  // Resources
+  document.getElementById("val-rna").innerText = formatNumber(game.res.rna);
+  document.getElementById("label-rna-cap").innerText = "/ " + formatNumber(game.res.rnaCap);
+  document.getElementById("val-dna").innerText = formatNumber(game.res.dna);
+  document.getElementById("label-dna-cap").innerText = "/ " + formatNumber(game.res.dnaCap);
+  document.getElementById("val-atp").innerText = formatNumber(game.res.atp);
+  document.getElementById("label-atp-cap").innerText = "/ " + formatNumber(game.res.atpCap);
+
+  document.getElementById("rate-rna").innerText = "+" + getRnaRate().toFixed(1) + "/sn";
+  document.getElementById("rate-dna").innerText = "+" + getDnaRate().toFixed(1) + "/sn";
+  document.getElementById("rate-atp").innerText = "+" + getAtpRate().toFixed(1) + "/sn";
+
+  document.getElementById("synth-info").innerText = "+" + game.clickPower + " RNA üretmek için dokun";
+
+  // Organelles
+  for (let id in game.organelles) {
+    const org = game.organelles[id];
+    const btn = document.getElementById("btn-buy-" + id);
+    const costEl = document.getElementById("cost-" + id);
+    const countEl = document.getElementById("count-" + id);
+
+    if (btn && costEl) {
+      let qty = game.buyMult === "max" ? calculateMax(org).count : game.buyMult;
+      let cost = game.buyMult === "max" ? calculateMax(org).cost : calculateCost(org, qty);
+
+      costEl.innerText = formatNumber(cost) + " RNA";
+      countEl.innerText = "x" + org.count;
+
+      if (game.res.rna >= cost) {
+        btn.classList.remove("disabled");
+        costEl.classList.remove("red");
+      } else {
+        btn.classList.add("disabled");
+        costEl.classList.add("red");
+      }
+    }
+  }
+
+  // Research
+  for (let id in game.research) {
+    const tech = game.research[id];
+    const btn = document.getElementById("btn-tech-" + id);
+    if (btn) {
+      if (tech.bought) {
+        btn.innerText = "Geliştirildi ✓";
+        btn.classList.add("disabled");
+        btn.style.background = "#059669";
+      } else {
+        const canAfford = game.res.rna >= tech.costRna && game.res.dna >= tech.costDna;
+        if (canAfford) {
+          btn.classList.remove("disabled");
+        } else {
+          btn.classList.add("disabled");
+        }
+      }
+    }
+  }
+}
+
+// --- BUILD HTML CARDS ---
+function buildOrganelleCards() {
+  const container = document.getElementById("organelle-cards-container");
+  container.innerHTML = "";
+
+  for (let id in game.organelles) {
+    const org = game.organelles[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${org.name}</span>
+        <span class="item-count" id="count-${id}">x${org.count}</span>
+      </div>
+      <p class="item-desc">${org.desc}</p>
+      <div class="item-effect">${org.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost" id="cost-${id}">0 RNA</span>
+        <button class="action-btn" id="btn-buy-${id}" onclick="handleBuyOrganelle('${id}')">Geliştir</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+function buildResearchCards() {
+  const container = document.getElementById("research-cards-container");
+  container.innerHTML = "";
+
+  for (let id in game.research) {
+    const tech = game.research[id];
+    const card = document.createElement("div");
+    card.className = "item-card";
+
+    let costTexts = [];
+    if (tech.costRna > 0) costTexts.push(tech.costRna + " RNA");
+    if (tech.costDna > 0) costTexts.push(tech.costDna + " DNA");
+
+    card.innerHTML = `
+      <div class="item-header">
+        <span class="item-title">${tech.name}</span>
+      </div>
+      <p class="item-desc">${tech.desc}</p>
+      <div class="item-effect">${tech.effect}</div>
+      <div class="item-footer">
+        <span class="item-cost">${costTexts.join(" + ")}</span>
+        <button class="action-btn" id="btn-tech-${id}" onclick="handleBuyResearch('${id}')">Mutasyon Yap</button>
+      </div>
+    `;
+    container.appendChild(card);
+  }
+}
+
+// --- TICK LOOP ---
+function gameTick() {
+  const now = Date.now();
+  const dt = (now - game.lastTick) / 1000;
+  game.lastTick = now;
+
+  game.res.rna = Math.min(game.res.rnaCap, game.res.rna + getRnaRate() * dt);
+  game.res.dna = Math.min(game.res.dnaCap, game.res.dna + getDnaRate() * dt);
+  game.res.atp = Math.min(game.res.atpCap, game.res.atp + getAtpRate() * dt);
+
+  renderUI();
+}
+
+// --- SAVE & LOAD ---
+function saveGameState() {
+  safeStore.set("evolve_mobile_save", JSON.stringify(game));
+}
+
+function loadGameState() {
+  const raw = safeStore.get("evolve_mobile_save");
+  if (raw) {
+    try {
+      const data = JSON.parse(raw);
+      if (data.res) Object.assign(game.res, data.res);
+      if (data.clickPower) game.clickPower = data.clickPower;
+      if (data.organelles) {
+        for (let k in data.organelles) {
+          if (game.organelles[k]) game.organelles[k].count = data.organelles[k].count;
+        }
+      }
+      if (data.research) {
+        for (let k in data.research) {
+          if (game.research[k]) game.research[k].bought = data.research[k].bought;
+        }
+      }
+      updateCaps();
+
+      if (data.lastTick) {
+        const diffSec = Math.min(86400, (Date.now() - data.lastTick) / 1000);
+        if (diffSec > 10) {
+          const rnaGained = Math.min(game.res.rnaCap - game.res.rna, getRnaRate() * diffSec);
+          game.res.rna += rnaGained;
+          showToast("Hoş geldin! +" + formatNumber(rnaGained) + " RNA toplandı.");
+        }
+      }
+    } catch (e) {
+      console.error("Load failed", e);
+    }
+  }
+}
+
+// --- BOOTSTRAP (RUNS ONCE JAVASCRIPT IS ACTIVE) ---
+window.addEventListener("DOMContentLoaded", function() {
+  // 1. Hide the warning banner because JavaScript is working!
+  const banner = document.getElementById("js-disabled-banner");
+  if (banner) banner.style.display = "none";
+
+  // 2. Set status badge to Active
+  const badge = document.getElementById("js-status-badge");
+  if (badge) {
+    badge.innerHTML = '<span class="pulse-dot"></span><span>Motor: Aktif (Çalışıyor)</span>';
+  }
+
+  // 3. Build UI & Start
+  buildOrganelleCards();
+  buildResearchCards();
+  loadGameState();
+  updateCaps();
+  renderUI();
+
+  // 4. Timers
+  setInterval(gameTick, 100);
+  setInterval(saveGameState, 5000);
+  
+window.handleSynthClick = handleSynthClick;
+window.handleBuyOrganelle = handleBuyOrganelle;
+window.handleBuyResearch = handleBuyResearch;
+window.switchTab = switchTab;
+window.setMultiplier = setMultiplier;
+window.cheatRna = cheatRna;
+window.forceSave = forceSave;
+window.resetSave = resetSave;
+
+console.log("Evolve Mobile Engine initialized successfully!");
+});
+</script>
+</body>
+</html>
