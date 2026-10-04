@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Depoyu İndir
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Google Drive'dan En Son Oyunu Çek
         run: |
@@ -24,5 +26,4 @@ jobs:
           git config user.name "DriveSyncBot"
           git config user.email "bot@github.com"
           git add index.html
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Otomatik Drive guncellemesi" && git push)
-          
+          git diff --staged --quiet || (git commit -m "Otomatik Drive guncellemesi" && git pull --rebase origin main && git push origin main)
