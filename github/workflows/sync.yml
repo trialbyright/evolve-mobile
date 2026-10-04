@@ -1,0 +1,30 @@
+name: Sync Game from Google Drive
+
+on:
+  schedule:
+    # Her 5 dakikada bir otomatik kontrol eder
+    - cron: '*/5 * * * *'
+  # Veya GitHub'dan tek tıkla anında çalıştırmak için:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu İndir
+        uses: actions/checkout@v4
+
+      - name: Google Drive'dan En Son Oyunu Çek
+        run: |
+          curl -L "https://drive.google.com/uc?export=download&id=1TDaUIrVyGVsgRjEXkG_G-bT2gs9iQER-" -o index.html
+
+      - name: Değişiklik Varsa Kaydet ve Yayınla
+        run: |
+          git config user.name "DriveSyncBot"
+          git config user.email "bot@github.com"
+          git add index.html
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Otomatik Drive guncellemesi" && git push)
+          
